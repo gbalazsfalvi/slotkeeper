@@ -92,6 +92,11 @@ public final class ApiProblems {
         || failure instanceof MethodArgumentTypeMismatchException
         || failure instanceof ServletRequestBindingException
         || failure instanceof IllegalArgumentException) return ProblemCode.VALIDATION_ERROR;
+    // A lost JDBC connection can fail commit/rollback without retaining a SQLState.
+    // The write outcome may be unknown; callers must retain their idempotency key.
+    if (failure instanceof org.springframework.transaction.TransactionSystemException transaction
+        && transaction.contains(java.sql.SQLException.class))
+      return ProblemCode.SERVICE_UNAVAILABLE;
     if (failure instanceof org.springframework.transaction.CannotCreateTransactionException
         || failure instanceof DataAccessResourceFailureException)
       return ProblemCode.SERVICE_UNAVAILABLE;

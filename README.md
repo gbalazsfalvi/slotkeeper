@@ -28,7 +28,7 @@ The booking timeline cannot move backward. It can pause while a regressed wall c
 
 Prerequisites: Git, a Java 21 JDK, Node.js 24.14 or later in the 24.x line, and a local Docker daemon with Docker Compose. Windows uses PowerShell 7.4 or newer; native Linux uses Bash, Python 3 and `flock`. Select Java 21 in the invoking shell. Dependencies, wrapper bytes and container images are pinned.
 
-Use the current `main` checkout for a cold build. The immutable `v0.1.0` tag predates a [strict dependency-metadata correction](docs/DEPENDENCY_VERIFICATION.md); the released application behavior and original evidence are unchanged.
+Use the current `main` checkout for a cold build. The immutable `v0.1.0` tag predates a [strict dependency-metadata correction](docs/DEPENDENCY_VERIFICATION.md); the original release and evidence are preserved. Current `main` also includes the documented [JDBC outage-handling follow-up](docs/PUBLICATION.md).
 
 From the repository root, use PowerShell:
 

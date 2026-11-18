@@ -18,6 +18,26 @@ import tools.jackson.databind.json.JsonMapper;
  */
 class ApiProblemsTest {
   @Test
+  void jdbcTransactionCompletionFailureIsRetryableWithoutExposingItsCause() {
+    var failure =
+        new org.springframework.transaction.TransactionSystemException(
+            "private-sentinel-transaction", new SQLException("private-sentinel-connection"));
+    var response =
+        new ApiProblems(JsonMapper.builder().build()).handle(failure, new MockHttpServletRequest());
+    assertEquals(503, response.getStatusCode().value());
+    assertEquals("SERVICE_UNAVAILABLE", response.getBody().get("code"));
+    assertFalse(response.getBody().toString().contains("private-sentinel"));
+  }
+
+  @Test
+  void nonJdbcTransactionFailureRetainsTheInternalErrorCategory() {
+    var failure =
+        new org.springframework.transaction.TransactionSystemException(
+            "Synthetic non-JDBC failure", new IllegalStateException("private-sentinel-state"));
+    assertEquals(ProblemCode.INTERNAL_ERROR, ApiProblems.classify(failure));
+  }
+
+  @Test
   void unexpectedFailureDiagnosticsExcludeMessagesAndThrowablePayloads() {
     Logger logger = (Logger) LoggerFactory.getLogger(ApiProblems.class);
     var capture = new ListAppender<ILoggingEvent>();
