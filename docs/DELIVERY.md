@@ -35,3 +35,7 @@ Append exact commands, source revisions and outcomes after execution. Planned ch
 - Task1 first red/green cycle observed: twelve core policy/state tests initially failed compilation because production types did not exist; after implementation all12passed,0failures/errors/skips. Logs remain in ignored.local/. This is not yet the complete Task1 gate.
 - Npm installation and the foundation React/TypeScript/Vite build passed on Node24.14 after the compatible jsdom pin. The initial shell is not described as a completed booking interface.
 - Ruling: explicit dependency inventory is an uncached administrative build task. Run it with --no-configuration-cache; normal compile/test tasks may retain the user's cache setting. Strict verification remains enabled.
+
+## Task1 observed core delivery
+
+The complete core check passed:40tests,0failures/errors/skips;301/304lines and131/140branches covered before the read-model projection constructors were added. The final check also passed after adding the projections; use the actual XML for the final release percentage. State/expiry, scoped retries, stale cancellation, current membership, wrong-scope adapters and an independent typed-request hash vector are exercised. Mockito uses interface-only JDK proxies; these are use-case coordination tests, not database evidence. PostgreSQL evidence remains Task2. One serialized-field Javadoc warning was identified and its documentation is being corrected.

@@ -8,3 +8,5 @@ tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
     } }
 }
 tasks.named("check") { dependsOn("jacocoTestCoverageVerification") }
+
+dependencies { testImplementation(platform(libs.spring.boot.bom)); testImplementation("org.mockito:mockito-core") }

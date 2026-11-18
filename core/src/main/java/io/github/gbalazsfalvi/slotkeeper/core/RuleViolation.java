@@ -6,6 +6,12 @@ import java.util.Objects;
 /** A safe machine-readable rejection, without request bodies or transport-specific details. */
 public final class RuleViolation extends RuntimeException {
   @Serial private static final long serialVersionUID = 1L;
+
+  /**
+   * The stable safe failure category.
+   *
+   * @serial the stable safe failure category
+   */
   private final ProblemCode code;
 
   /**

@@ -4,7 +4,7 @@ All paths are same-origin. JSON uses UTF-8. Times are ISO8601 UTC instants; work
 
 ## Session and CSRF
 
-GET /api/session returns200 with {"authenticated":false} or {"authenticated":true,"user":{"id":"uuid","displayName":"Alex"}}. It never returns a password/hash/token. GET /api/workspaces requires authentication and returns {"items":[{"id":"uuid","name":"Harbor Works","timeZone":"Europe/Budapest","role":"MEMBER"}]}.
+GET /api/session returns200 with {"authenticated":false,"serverNow":"instant"} or {"authenticated":true,"user":{"id":"uuid","displayName":"Alex"},"serverNow":"instant"}. It never returns a password/hash/token. GET /api/workspaces requires authentication and returns {"items":[{"id":"uuid","name":"Harbor Works","timeZone":"Europe/Budapest","role":"MEMBER"}]}.
 
 GET /api/csrf returns {"headerName":"X-CSRF-TOKEN","token":"opaque"}. This token is private runtime state and must never be copied to public evidence. Anonymous token/session creation is bounded separately at60requests per fixed minute per actual peer; normal authenticated refresh uses the existing session.
 
@@ -84,3 +84,8 @@ JSON bodies max16KiB; URL-form login fields are bounded before hashing; paginati
 ## Local health/ownership marker
 
 GET /actuator/health returns minimal health/readiness. GET /api/instance returns {"project":"Slotkeeper","instanceId":"uuid","mode":"LOCAL","version":"0.1.0"}. The instance marker prevents accidental tests against a different local process; it is not an authentication/security attestation. The runner also verifies process/container ownership and loopback target origin.
+
+
+## Synthetic local identity seed
+
+Development-only usernames: alex (Harbor member), morgan (Harbor admin), riley (Studio member), jordan (Studio admin and Harbor member). The local fixture password is Slotkeeper-Local-Only! for these synthetic accounts; it is not a production secret or an external-service credential. Membership is read from the database for each scope. Jordan's admin role in Studio does not grant admin access in Harbor. No real names/emails or external user records are imported.

@@ -33,7 +33,20 @@ public record Reservation(
     Instant expiresAt,
     Instant confirmedAt) {
 
-  /** Validates immutable identities and a coherent stored snapshot. */
+  /**
+   * Validates immutable identities and a coherent stored snapshot.
+   *
+   * @param id stable reservation identity
+   * @param workspaceId owning workspace
+   * @param roomId scoped room identity
+   * @param ownerId authenticated owner, never bound from an HTTP body
+   * @param startAt inclusive slot start
+   * @param endAt exclusive slot end
+   * @param status persisted lifecycle state
+   * @param createdAt original creation time
+   * @param expiresAt original hold deadline, retained after confirmation
+   * @param confirmedAt first successful confirmation time, or null if never confirmed
+   */
   public Reservation {
     Objects.requireNonNull(id);
     Objects.requireNonNull(workspaceId);

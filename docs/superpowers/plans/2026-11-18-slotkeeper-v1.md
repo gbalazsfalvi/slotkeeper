@@ -166,3 +166,6 @@ Freeze these core interfaces before adapters diverge; small refinements must upd
 The design-to-task mapping covers product, auth, scoping, state/expiry, durable concurrency, quotas, limits, UI, abuse rehearsal, positive control, reports, packaging and documentation. Review Focus items are pinned to Tasks2/3/4/6. All consumers use the shared API/domain contracts above. External SSO, payments, notifications, internet-facing operation and PQC are explicitly future work.
 
 The design received a bounded read-only builder check on18November2026: no important unanswered implementation question was found; one-day scope remains ambitious. User authorization is to finish today's reference goal, so implementation proceeds through these bounded milestones using the specified local scope and existing constraints.
+
+
+Execution ruling: after the shared API contract and locked foundation were established, the independent web implementation is delegated as one bounded parallel domain under dispatching-parallel-agents. The parent continues native execution for backend, persistence, runner and integration. This is not a fresh implementer/reviewer per task. File ownership and the persistent ledger govern the handoff.

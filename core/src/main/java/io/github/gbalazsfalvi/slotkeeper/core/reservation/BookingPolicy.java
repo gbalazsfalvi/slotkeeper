@@ -20,7 +20,14 @@ import java.util.Objects;
  */
 public record BookingPolicy(
     Duration holdTtl, int maxActiveHolds, int maxConfirmationsPerDay, int horizonDays) {
-  /** Rejects nonsensical trusted configuration. */
+  /**
+   * Rejects nonsensical trusted configuration.
+   *
+   * @param holdTtl positive temporary hold duration
+   * @param maxActiveHolds maximum unexpired holds per actor/workspace
+   * @param maxConfirmationsPerDay nonrefundable successful daily confirmation allowance
+   * @param horizonDays number of selectable local dates including today
+   */
   public BookingPolicy {
     Objects.requireNonNull(holdTtl);
     if (holdTtl.isNegative()
