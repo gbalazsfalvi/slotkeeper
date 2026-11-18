@@ -19,6 +19,8 @@ The immutable `v0.1.0` source tag predates this metadata correction. Use the cur
 
 The next hosted build reached application resolution and identified 22 additional missing POM/module metadata files. A separate scratch checkout generated a candidate from all resolvable configurations with an initially empty Gradle home. Every added exact hash was reviewed against canonical HTTPS Maven Central bytes and the plugin portal route before merging it into the strict source file. All original hashes were preserved; no executable artifact or selected dependency version changed. Sixteen of these additional files also had matching publisher SHA-256 sidecars; six older metadata publications did not publish that sidecar.
 
+This covers named resolvable configurations, rather than every plugin's lazy first-resolution path. The subsequent hosted build reached Spotless and exposed one more cold-only parent POM. See the formatter note below.
+
 | Exact artifact | Pinned SHA-256 | Publisher SHA-256 sidecar | Canonical source |
 | --- | --- | --- | --- |
 | `oss-parent-68.pom` | `25eafd96dae242b6b5a7108f55b2c14015b828daa5abe234289fd6e774a1ce57` | matched | [Maven Central](https://repo.maven.apache.org/maven2/com/fasterxml/oss-parent/68/oss-parent-68.pom) |
@@ -43,3 +45,14 @@ The next hosted build reached application resolution and identified 22 additiona
 | `spring-pulsar-bom-2.0.8.module` | `60ee68d3198417ac22fc1cb0fc6c309a7f1026b30a05f3f779727a8ed622e561` | matched | [Maven Central](https://repo.maven.apache.org/maven2/org/springframework/pulsar/spring-pulsar-bom/2.0.8/spring-pulsar-bom-2.0.8.module) |
 | `spring-security-bom-7.1.2.module` | `d2069bb6d8b320578969e50491349bc5a25a6b5dd98c89cd3821177454b950c6` | matched | [Maven Central](https://repo.maven.apache.org/maven2/org/springframework/security/spring-security-bom/7.1.2/spring-security-bom-7.1.2.module) |
 | `spring-session-bom-4.1.1.module` | `604335e7a5a3b57a8e9d77e3bda6486df9e8b80e782c72bd32315b87eaabb8b9` | matched | [Maven Central](https://repo.maven.apache.org/maven2/org/springframework/session/spring-session-bom/4.1.1/spring-session-bom-4.1.1.module) |
+
+## Lazy formatter resolution
+
+Spotless's top-level repository error concealed the first failure: the Gradle verification report identified `guava-parent-32.1.3-jre.pom`. After module metadata was cached, a metadata-writing run did not rediscover that parent POM. The formatter's parent and corresponding library POM were therefore reviewed directly against canonical Maven Central and plugin-portal-route bytes. Both matched the publisher's SHA-1 sidecars; those older publications have no SHA-256 sidecar. The computed SHA-256 values below are pinned. No existing checksum or selected version was changed.
+
+| Exact artifact | Pinned SHA-256 | Canonical source |
+| --- | --- | --- |
+| `guava-parent-32.1.3-jre.pom` | `f283c1f04897a9a88a3fa4ff46804e65e82114809a09cd04094bf7de01b1857b` | [Maven Central](https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/32.1.3-jre/guava-parent-32.1.3-jre.pom) |
+| `guava-32.1.3-jre.pom` | `700e6d46e75b5939a22a41c25ec2bb122f3cbef4efed45e3312fddcbe993db33` | [Maven Central](https://repo.maven.apache.org/maven2/com/google/guava/guava/32.1.3-jre/guava-32.1.3-jre.pom) |
+
+Hosted clean-checkout verification is the final cross-platform check. A warm-cache pass or a metadata-writing run alone does not establish that a fresh reader can build the repository.
