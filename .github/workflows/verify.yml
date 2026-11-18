@@ -1,0 +1,39 @@
+name: Verify Slotkeeper
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      # Pinned from the official action repositories on 2026-11-18.
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.14.0'
+      - name: Verify official wrapper integrity
+        run: echo '423cb469ccc0ecc31f0e4e1c309976198ccb734cdcbb7029d4bda0f18f57e8d9  gradle/wrapper/gradle-wrapper.jar' | sha256sum --check --status
+      - name: Locked Java, PostgreSQL, process and frontend verification
+        env:
+          SLOTKEEPER_REVISION: ${{ github.sha }}
+        run: ./gradlew --console=plain --no-daemon --dependency-verification=strict clean verify :application:bootJar :verification:installDist :training-target:installDist
+      - name: Mocked launcher safety regressions
+        shell: pwsh
+        run: ./scripts/tests/Launcher.Tests.ps1
+      - name: Frontend formatting
+        working-directory: web
+        run: npm run format:check
+      # Browser and complete rehearsal remain explicit local evidence in v1.
+      # A prepared workflow is never described as a remotely observed PASS.

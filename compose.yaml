@@ -1,0 +1,129 @@
+name: ${SLOTKEEPER_PROJECT_NAME:?Use the project launcher to create private local configuration}
+
+x-product: &product
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: slotkeeper-local:${SLOTKEEPER_OWNER_ID:?Missing local ownership identity}
+  user: "10001:10001"
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m,mode=1777
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  mem_limit: 768m
+  cpus: 1.0
+  pids_limit: 128
+  init: true
+  environment: &product-env
+    JAVA_TOOL_OPTIONS: -Xms64m -Xmx384m -XX:+ExitOnOutOfMemoryError
+    SERVER_ADDRESS: 0.0.0.0
+    PORT: 4190
+    SLOTKEEPER_DB_URL: jdbc:postgresql://database:5432/slotkeeper?currentSchema=slotkeeper&connectTimeout=3&socketTimeout=15
+    SLOTKEEPER_DB_PASSWORD: ${SLOTKEEPER_APP_PASSWORD:?Missing runtime password}
+    SLOTKEEPER_SECURE_COOKIE: "false"
+  depends_on:
+    database: {condition: service_healthy}
+    migrate: {condition: service_completed_successfully}
+  healthcheck:
+    test: [CMD, java, -jar, /opt/slotkeeper/slotkeeper.jar, health]
+    interval: 10s
+    timeout: 5s
+    start_period: 40s
+    retries: 6
+  labels:
+    io.slotkeeper.owner: ${SLOTKEEPER_OWNER_ID}
+    io.slotkeeper.kind: product
+  networks: [private]
+
+services:
+  database:
+    image: postgres:18.7@sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc
+    environment:
+      POSTGRES_USER: slotkeeper_owner
+      POSTGRES_DB: slotkeeper
+      POSTGRES_PASSWORD: ${SLOTKEEPER_OWNER_PASSWORD:?Missing database owner password}
+      SLOTKEEPER_MIGRATION_PASSWORD: ${SLOTKEEPER_MIGRATION_PASSWORD:?Missing migration password}
+      SLOTKEEPER_APP_PASSWORD: ${SLOTKEEPER_APP_PASSWORD}
+    ports: ["127.0.0.1:55419:5432"]
+    volumes:
+      - database:/var/lib/postgresql
+      - ./docker/001-local-roles.sh:/docker-entrypoint-initdb.d/001-local-roles.sh:ro
+    command: [postgres, -c, max_connections=40, -c, shared_buffers=32MB, -c, log_statement=none]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -h 127.0.0.1 -U slotkeeper_owner -d slotkeeper"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    labels:
+      io.slotkeeper.owner: ${SLOTKEEPER_OWNER_ID}
+      io.slotkeeper.kind: database
+    networks: [private]
+
+  migrate:
+    <<: *product
+    command: [migrate]
+    environment:
+      JAVA_TOOL_OPTIONS: -Xms32m -Xmx256m
+      SLOTKEEPER_DB_URL: jdbc:postgresql://database:5432/slotkeeper?currentSchema=slotkeeper&connectTimeout=3&socketTimeout=15
+      SLOTKEEPER_MIGRATION_USER: slotkeeper_migrator
+      SLOTKEEPER_MIGRATION_PASSWORD: ${SLOTKEEPER_MIGRATION_PASSWORD}
+    depends_on:
+      database: {condition: service_healthy}
+    healthcheck: {disable: true}
+    labels:
+      io.slotkeeper.owner: ${SLOTKEEPER_OWNER_ID}
+      io.slotkeeper.kind: migration
+
+  app:
+    <<: *product
+    ports: ["127.0.0.1:4190:4190"]
+    environment:
+      <<: *product-env
+      SLOTKEEPER_INSTANCE_ID: ${SLOTKEEPER_APP_INSTANCE_ID:?Missing owned instance identity}
+
+  app2:
+    <<: *product
+    profiles: [rehearsal]
+    ports: ["127.0.0.1:4192:4190"]
+    environment:
+      <<: *product-env
+      SLOTKEEPER_INSTANCE_ID: ${SLOTKEEPER_APP2_INSTANCE_ID:?Missing second instance identity}
+
+  training:
+    profiles: [rehearsal]
+    build:
+      context: .
+      dockerfile: Dockerfile.training
+    image: slotkeeper-training-local:${SLOTKEEPER_OWNER_ID}
+    command: [--instance-id, "${SLOTKEEPER_TRAINING_INSTANCE_ID}", --bind-address, 0.0.0.0, --port, "4193"]
+    ports: ["127.0.0.1:4193:4193"]
+    user: "10001:10001"
+    read_only: true
+    tmpfs: ["/tmp:size=32m,mode=1777"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 192m
+    cpus: 0.5
+    pids_limit: 64
+    init: true
+    environment:
+      JAVA_TOOL_OPTIONS: -Xms16m -Xmx96m
+    labels:
+      io.slotkeeper.owner: ${SLOTKEEPER_OWNER_ID}
+      io.slotkeeper.kind: intentionally-vulnerable-teaching-fixture
+    # It has no product database, cookie secret, volume or product-network membership.
+    networks: [teaching]
+
+volumes:
+  database:
+    labels:
+      io.slotkeeper.owner: ${SLOTKEEPER_OWNER_ID}
+networks:
+  private:
+    labels: {io.slotkeeper.owner: "${SLOTKEEPER_OWNER_ID}"}
+  teaching:
+    labels: {io.slotkeeper.owner: "${SLOTKEEPER_OWNER_ID}"}

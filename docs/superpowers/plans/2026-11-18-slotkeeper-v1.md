@@ -61,13 +61,13 @@ Freeze these core interfaces before adapters diverge; small refinements must upd
 
 **Produces:** project-scoped build/run commands, locked dependencies and exact API examples. No placeholder application is called a finished product.
 
-- [ ] Verify local Java21, Node24 and Docker Desktop. Record versions and immutable image digests; verify wrapper bytes from official sources. Do not run NVM or alter global configuration.
-- [ ] Initialize an authentic local main repository in Slotkeeper only. Set local author metadata; ignore runtime credentials, caches, artifacts, screenshots-in-progress and container state.
-- [ ] Configure four Gradle modules, constructor-based boundaries, JUnit, formatting, Javadoc, core coverage and architecture checks. Declare test/runtime configurations before strict dependency metadata generation so cold resolution is covered.
-- [ ] Pin npm packages and produce one lockfile. Keep app serving the packaged static frontend; the standalone Vite server is optional development only.
-- [ ] Write API.md with request/response/error examples for every design endpoint, CSRF/login encoding, pagination and idempotent replay semantics before frontend/backend work separates.
-- [ ] Verify wrapper, dependency resolution, configuration and typed frontend setup; preserve actual command outcomes. Initial foundation checks are configuration checks, not fabricated feature tests.
-- [ ] Commit the reviewed foundation and contracts.
+- [x] Verify local Java21, Node24 and Docker Desktop. Record versions and immutable image digests; verify wrapper bytes from official sources. Do not run NVM or alter global configuration.
+- [x] Initialize an authentic local main repository in Slotkeeper only. Set local author metadata; ignore runtime credentials, caches, artifacts, screenshots-in-progress and container state.
+- [x] Configure four Gradle modules, constructor-based boundaries, JUnit, formatting, Javadoc, core coverage and architecture checks. Declare test/runtime configurations before strict dependency metadata generation so cold resolution is covered.
+- [x] Pin npm packages and produce one lockfile. Keep app serving the packaged static frontend; the standalone Vite server is optional development only.
+- [x] Write API.md with request/response/error examples for every design endpoint, CSRF/login encoding, pagination and idempotent replay semantics before frontend/backend work separates.
+- [x] Verify wrapper, dependency resolution, configuration and typed frontend setup; preserve actual command outcomes. Initial foundation checks are configuration checks, not fabricated feature tests.
+- [x] Commit the reviewed foundation and contracts.
 
 ## Task1: domain states and pure use cases
 
@@ -75,11 +75,11 @@ Freeze these core interfaces before adapters diverge; small refinements must upd
 
 **Consumes:** the fixed design/API contract. **Produces:** the interfaces above and deterministic decisions for explicit inputs/time.
 
-- [ ] Write failing parameterized tests: HELD confirms before expiry; exact expiry boundary rejects; CANCELLED/EXPIRED cannot revive; CONFIRMED cancellation is idempotent; foreign owner is unavailable; a third active hold and fifth successful confirmation fail; canceled confirmations still consume allowance.
-- [ ] Run :core:test and observe missing types/behavior before implementation.
-- [ ] Implement immutable values, scoped permission policies and use-case orchestration. A transaction port owns atomicity; no Spring/JDBC/HTTP imports in core. Validate exact30minute schedule/horizon/zone semantics.
-- [ ] Add tests for DST transition instants, half-open adjacency, disabled rooms and invalid input bounds. Never use the production method itself as an expected-value oracle.
-- [ ] Run :core:test, formatting/Javadoc and coverage; commit only after the behavioral checks pass.
+- [x] Write failing parameterized tests: HELD confirms before expiry; exact expiry boundary rejects; CANCELLED/EXPIRED cannot revive; CONFIRMED cancellation is idempotent; foreign owner is unavailable; a third active hold and fifth successful confirmation fail; canceled confirmations still consume allowance.
+- [x] Run :core:test and observe missing types/behavior before implementation.
+- [x] Implement immutable values, scoped permission policies and use-case orchestration. A transaction port owns atomicity; no Spring/JDBC/HTTP imports in core. Validate exact30minute schedule/horizon/zone semantics.
+- [x] Add tests for DST transition instants, half-open adjacency, disabled rooms and invalid input bounds. Never use the production method itself as an expected-value oracle.
+- [x] Run :core:test, formatting/Javadoc and coverage; commit only after the behavioral checks pass.
 
 ## Task2: PostgreSQL transactions, expiry and contention
 
@@ -169,3 +169,5 @@ The design received a bounded read-only builder check on18November2026: no impor
 
 
 Execution ruling: after the shared API contract and locked foundation were established, the independent web implementation is delegated as one bounded parallel domain under dispatching-parallel-agents. The parent continues native execution for backend, persistence, runner and integration. This is not a fresh implementer/reviewer per task. File ownership and the persistent ledger govern the handoff.
+
+Execution amendment: actual browser diagnostics measured a fresh database time2.250273seconds earlier than a committed reservation creation. Task2 therefore includes additiveV002, a durable nondecreasing decision clock with independent bounded connections, historical bootstrap and clock-fault regression tests. Core expiry/ownership guards and declared120second timestamp TTL remain unchanged. Cleanup now obtains room before slot/reservation to match business/FK lock order; a busy-room regression was observedRED before that fix. ADR0005 documents logical-clock scope and physical-time limits.

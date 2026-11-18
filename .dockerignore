@@ -1,0 +1,14 @@
+**
+!Dockerfile
+!Dockerfile.training
+!LICENSE
+!NOTICE
+!application/
+!application/build/
+!application/build/libs/
+!application/build/libs/application-0.1.0.jar
+!training-target/
+!training-target/build/
+!training-target/build/install/
+!training-target/build/install/training-target/
+!training-target/build/install/training-target/**

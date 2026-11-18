@@ -1,41 +1,70 @@
-# Delivery record
+# Local delivery record
 
-## Plan identity
+**Target release:** v0.1.0, 18 November 2026.
+**Status:** release candidate; the final clean, revision-matched rehearsal is pending.
 
-Design: docs/superpowers/specs/2026-11-18-slotkeeper-design.md.
-Plan: docs/superpowers/plans/2026-11-18-slotkeeper-v1.md.
-Target: 18 November 2026, 23:59 Europe/Budapest.
+The deliverable is an English room-reservation product and an inspectable local security reference. Public GitHub publication, an internet-facing deployment and portfolio publication are outside this delivery. This record distinguishes development checks from the final release gate.
 
-## Current state
+## Observed development checks
 
-- Design and implementation plan written in English.
-- Read-only builder review: no important unanswered implementation question found.
-- Task0 foundation in progress. No product/test completion claimed.
-- Task1â€“Task7 remain.
+| Check | Observed result before the final rehearsal |
+| --- | --- |
+| Framework-free domain | 40 tests; line and branch coverage gates passed |
+| Application unit and architecture checks | 5 tests passed |
+| Actual PostgreSQL and HTTP integration | 36 tests passed, including eight durable-clock checks and repeated lock-wait expiry checks |
+| Rehearsal/exporter and teaching fixture | 34 tests passed |
+| React behavior | 18 tests passed |
+| Actual packaged-app browser journeys | 8/8 passed: member, room admin, stale-slot conflict and per-workspace roles, each on desktop and mobile |
+| Mocked PowerShell launcher boundaries | 14/14 passed without real Docker commands |
+| Packaged product and distribution builds | Passed on Java 21 and Node 24 |
 
-## Environment observed
+The final release section will record the fresh locked command, exact source revision, observed test totals and actual rehearsal directory. Earlier successes do not substitute for that gate.
 
-Java21 is installed separately from the machine's default Java23; task commands explicitly select Java21. Node24.14.0 is installed. Docker Desktop29.8.1 is running with the local desktop-linux/npipe endpoint. Existing Docker workloads are not modified.
+## Meaningful faults found and corrected
 
-## Rulings
+- A foreign workspace could allocate a rate bucket before authorization. Admission now resolves current scoped membership first; a regression exercises the rejected request and unchanged bucket inventory.
+- A cold authentication provider can call password encoding to build a dummy hash. Both encoding and matching now share the four-job per-process Argon2 budget; the regression uses the actual cold provider.
+- Transaction creation and transaction-deadline failures originally reached an incorrect generic error path. Bounded dependency failures now produce safe service-unavailable problems rather than exposing infrastructure details.
+- An expiry worker acquired slot and room-related locks in the opposite order from booking. It now locks the room first and skips busy rows; the competing-room regression first reproduced the timeout and then passed.
+- Real browser runs exposed backward database wall-clock observations, including a transition observed 2.250273 seconds before its reservation creation. The exact host-clock cause was not established. A durable, nondecreasing booking timeline now preserves the domain guard without pretending that a regressed wall clock measures physical elapsed time. [ADR 0005](decisions/0005-durable-booking-time.md) explains the implementation and limits.
+- The initial internal-only Docker bridge did not forward the configured loopback ports on the observed Docker Desktop host. Owned containers/networks were recreated with separate ordinary bridges while retaining the database volume. The final design makes no outbound-network sandbox claim.
+- Launcher review found unlabeled exact-name resource collisions, incomplete startup cleanup and inherited Compose interpolation values. Ownership checks, cleanup scope and controlled child-process values now cover those cases; mocked regressions preserve the original failure when cleanup also fails.
 
-- Ruling: use the newly created dedicated Slotkeeper repository as the isolated workspace, with implementation on codex/slotkeeper-v1 after the initial plan commit â€” there is no existing Slotkeeper checkout to protect; using the ambient private repository's worktree tool would target the wrong project.
-- Ruling: a local PostgreSQL-backed session/rate design avoids extra cache/identity-provider services in today's scope â€” auth is still handled by Spring Security; future OIDC is a separate adapter change.
-- Ruling: strict request/ownership checks are mandatory even for idempotent replays â€” a stored identity is not authorization.
+## Environment and reproducibility
 
-## Observed checks
+Observed host: Windows, PowerShell 7, Docker Desktop 29.8.1, local Linux Docker engine, Oracle JDK 21 and Node.js 24.14.0 / npm 11.9.0. Java 21 is selected process-locally; the machine default Java and global Docker configuration are unchanged. No NVM scripts are used.
 
-Append exact commands, source revisions and outcomes after execution. Planned checks are not PASS evidence.
+The runtime image is Eclipse Temurin 21.0.13. Gradle 9.2.0, Spring Boot 4.1.2, PostgreSQL 18.7 and React 19.3.1 are pinned. Strict Gradle dependency verification, lockfiles, an npm lockfile and immutable container digests accompany the source. The official Gradle wrapper JAR SHA-256 is `423cb469ccc0ecc31f0e4e1c309976198ccb734cdcbb7029d4bda0f18f57e8d9`.
 
-- Foundation dependency resolution completed successfully with Gradle9.2.0 on Java21; strict re-resolution is being checked.
-- Official Gradle wrapper JAR SHA-256 matched423cb469ccc0ecc31f0e4e1c309976198ccb734cdcbb7029d4bda0f18f57e8d9.
-- PostgreSQL18.7 resolved to postgres@sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc.
-- Ruling: pin jsdom29.0.1 because latest31.0.1 requires Node24.15 while this host is24.14; the checked29.0.1 engine range supports this host. No Node/global environment change is needed.
+Windows PowerShell is the observed runtime path. The Bash launcher delegates to the same PowerShell entry point on Windows; native Linux execution and the prepared GitHub Actions workflow are not claimed as observed remote runs.
 
-- Task1 first red/green cycle observed: twelve core policy/state tests initially failed compilation because production types did not exist; after implementation all12passed,0failures/errors/skips. Logs remain in ignored.local/. This is not yet the complete Task1 gate.
-- Npm installation and the foundation React/TypeScript/Vite build passed on Node24.14 after the compatible jsdom pin. The initial shell is not described as a completed booking interface.
-- Ruling: explicit dependency inventory is an uncached administrative build task. Run it with --no-configuration-cache; normal compile/test tasks may retain the user's cache setting. Strict verification remains enabled.
+## Release verification procedure
 
-## Task1 observed core delivery
+Commit the intended source changes, then run from the repository root:
 
-The complete core check passed:40tests,0failures/errors/skips;301/304lines and131/140branches covered before the read-model projection constructors were added. The final check also passed after adding the projections; use the actual XML for the final release percentage. State/expiry, scoped retries, stale cancellation, current membership, wrong-scope adapters and an independent typed-request hash vector are exercised. Mockito uses interface-only JDK proxies; these are use-case coordination tests, not database evidence. PostgreSQL evidence remains Task2. One serialized-field Javadoc warning was identified and its documentation is being corrected.
+```powershell
+pwsh -NoProfile -File ./slotkeeper.ps1 rehearse
+```
+
+The command rejects a dirty source tree for revision-matched rehearsal. It runs strict clean Java/PostgreSQL/frontend verification, launcher regressions and formatting checks; obtains fresh two-JVM contention evidence; builds the product; starts the owned second app and teaching target; exports every required scenario; and stops those two secondary services even on failure. The normal product and persistent database remain available.
+
+The separate browser command is:
+
+```powershell
+cd web
+npx --no-install playwright test
+```
+
+Its eight observed journeys were run against the packaged local product. They consume real synthetic fixture allowances and create retained booking/room history; they are not stateless requests.
+
+## Screenshots and evidence boundaries
+
+`docs/images/slotkeeper-desktop.png` and `slotkeeper-mobile.png` are actual Chromium captures of Riley holding a Studio North room on the running application. The holds were released after capture. They are not generated mockups; credentials, cookies and traces were not exported.
+
+The rehearsal report and report screenshot will be attached only after a complete actual run. Reports record observations, not a security certification. The independent two-process database exercise runs below HTTP admission; rate-limited HTTP requests cannot replace its contention evidence. Report hashes detect changed bytes and do not attest to authorship or host integrity.
+
+## Local state and explicit limits
+
+The new repository is separate from the private messaging-service checkout. Existing sites, other repositories and unrelated Docker workloads were preserved. Launcher shutdown retains Slotkeeper's own persistent database volume and does not prune shared Docker state.
+
+The public fixture password is deliberately local-only. There is no real-user onboarding, TLS deployment, OIDC, payment, notification, backup/HA or production throughput claim. The teaching fixture is an independent artifact on a separate network, with no product database credentials, shared volume or normal application dependency.
