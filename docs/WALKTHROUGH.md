@@ -36,6 +36,7 @@ Open the generated `report.html` and inspect:
 - **A12:** HTTP outcome classification separately from the 100-attempt, two-JVM database evidence. `429` is not proof that a request reached a database lock.
 - **T01:** the isolated fixture actually demonstrates the missing-scope leak. Its actor model is explicitly reduced.
 - **S01:** a session and logout are checked across independent app processes.
+- **S02:** a read-only consistent PostgreSQL snapshot checks slot assignments, allowances, receipts, events and restricted runtime permissions.
 
 Use `report.json` for exact sanitized observations and assertions, `report.md` for a portable summary, and `SHA256SUMS` to check file bytes. Inspect the separate `database-contention.json` when assessing A12's database claim. A `FAIL`, `ERROR` or `INCOMPLETE` result remains meaningful; missing evidence does not pass. No complete final rehearsal is claimed until its actual report and delivery entry exist.
 

@@ -3,6 +3,7 @@ package io.github.gbalazsfalvi.slotkeeper.verification;
 /** Numeric evidence fields admitted into public exports. */
 enum Metric {
   HTTP_ATTEMPTS,
+  HTTP_MAX_IN_FLIGHT,
   HTTP_RESPONSES,
   HTTP_TRANSPORT_ERRORS,
   HTTP_CREATED,
@@ -25,6 +26,7 @@ enum Metric {
   DATABASE_STARTED_EPOCH_MILLIS,
   DATABASE_FINISHED_EPOCH_MILLIS,
   FLOOD_ATTEMPTS,
+  FLOOD_MAX_IN_FLIGHT,
   FLOOD_RATE_LIMITED,
   HOLD_TTL_SECONDS
 }

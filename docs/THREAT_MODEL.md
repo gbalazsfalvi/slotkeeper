@@ -45,7 +45,7 @@ The statuses below describe the specific validly formed scenario. Requests with 
 | Confirm after expiry or after a lock wait | Fresh database time after locks; exact deadline excluded; `409`, no late confirmation | A08 |
 | Release a replacement via a stale action | Expected-ID assignment release and terminal states; replacement assignment survives | A09 |
 | Hoard active slots | Actor/workspace guard and at most two live holds; extra distinct hold rejected without corrupting existing holds | A10 |
-| Bypass admission with forwarding headers | Atomic shared fixed-minute counters and actual connection peer; observed `429` and `Retry-After` | A11 |
+| Bypass admission with forwarding headers | Atomic shared fixed-minute counters and actual connection peer; 130 requests with at most eight in flight, observed `429` and `Retry-After` | A11 |
 | Win the same last slot concurrently | Slot/actor row locks, conditional assignment and relational constraints; classified HTTP outcomes plus independent two-process PostgreSQL evidence | A12 |
 | Mistake a dead exercise for protection | Separate fixture actually leaks its fixed foreign object; the hardened comparison denies access | T01 |
 | Lose session/logout semantics across replicas | Shared JDBC sessions, rotated login session and cross-process logout invalidation | S01 |

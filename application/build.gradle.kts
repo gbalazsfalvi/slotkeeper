@@ -35,6 +35,9 @@ val integrationTest by tasks.registering(Test::class) {
     shouldRunAfter(tasks.named("test"))
     maxHeapSize = "1024m"
     systemProperty("slotkeeper.test.classpath", sourceSets.test.get().runtimeClasspath.asPath)
+    // Real database/process evidence must be observed afresh, never restored from a task cache.
+    outputs.upToDateWhen { false }
+    outputs.cacheIf("Always observe PostgreSQL and independent worker processes") { false }
 }
 
 tasks.named<ProcessResources>("processResources") {

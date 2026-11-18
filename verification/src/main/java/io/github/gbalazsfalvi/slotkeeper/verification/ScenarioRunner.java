@@ -15,10 +15,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Independent real-HTTP checks of the frozen API, with explicit prerequisite and error outcomes.
@@ -635,6 +632,7 @@ final class ScenarioRunner {
             batch.transportErrors());
     evidence.assertions.addAll(summary.assertions());
     evidence.metrics.putAll(summary.metrics());
+    evidence.metrics.put(Metric.HTTP_MAX_IN_FLIGHT, 100L);
     requireTransport(batch, evidence);
     var winners = responses.stream().filter(r -> r.status() == 201).toList();
     if (winners.size() == 1) {
@@ -704,8 +702,9 @@ final class ScenarioRunner {
             Map.of());
     need(cancelled.status() == 200 && cancelled.state().equals("CANCELLED"));
     var batch =
-        parallel(
+        HttpRequestBatch.execute(
             130,
+            8,
             i ->
                 jordan.request(
                     "POST",
@@ -724,7 +723,8 @@ final class ScenarioRunner {
         responses.stream()
             .filter(r -> r.status() == 429 && r.code().equals("RATE_LIMITED"))
             .count();
-    evidence.metrics.put(Metric.FLOOD_ATTEMPTS, (long) responses.size());
+    evidence.metrics.put(Metric.FLOOD_ATTEMPTS, 130L);
+    evidence.metrics.put(Metric.FLOOD_MAX_IN_FLIGHT, 8L);
     evidence.metrics.put(Metric.FLOOD_RATE_LIMITED, limited);
     requireTransport(batch, evidence);
     evidence.expect(
@@ -1130,38 +1130,12 @@ final class ScenarioRunner {
       throw new IOException("Owned fixture cleanup failed");
   }
 
-  private static ConcurrentBatch parallel(int count, ConcurrentRequest request)
+  private static HttpRequestBatch.Result parallel(int count, HttpRequestBatch.Operation request)
       throws InterruptedException {
-    CountDownLatch ready = new CountDownLatch(count);
-    CountDownLatch start = new CountDownLatch(1);
-    try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-      List<Future<ActorSession.Response>> futures = new ArrayList<>();
-      for (int i = 0; i < count; i++) {
-        final int index = i;
-        futures.add(
-            executor.submit(
-                () -> {
-                  ready.countDown();
-                  start.await();
-                  return request.run(index);
-                }));
-      }
-      ready.await();
-      start.countDown();
-      var responses = new ArrayList<ActorSession.Response>();
-      int failures = 0;
-      for (var future : futures) {
-        try {
-          responses.add(future.get());
-        } catch (ExecutionException exception) {
-          failures++;
-        }
-      }
-      return new ConcurrentBatch(List.copyOf(responses), failures);
-    }
+    return HttpRequestBatch.execute(count, count, request);
   }
 
-  private static void requireTransport(ConcurrentBatch batch, CaseEvidence evidence)
+  private static void requireTransport(HttpRequestBatch.Result batch, CaseEvidence evidence)
       throws IOException {
     evidence.metrics.put(
         Metric.HTTP_ATTEMPTS, (long) batch.responses().size() + batch.transportErrors());
@@ -1171,17 +1145,10 @@ final class ScenarioRunner {
       throw new IOException("Concurrent HTTP outcomes include transport failures");
   }
 
-  private record ConcurrentBatch(List<ActorSession.Response> responses, int transportErrors) {}
-
   @FunctionalInterface
   private interface CheckedCase {
     void run(CaseEvidence evidence)
         throws IOException, InterruptedException, Prerequisite, ExecutionException;
-  }
-
-  @FunctionalInterface
-  private interface ConcurrentRequest {
-    ActorSession.Response run(int index) throws IOException, InterruptedException;
   }
 
   private static final class Prerequisite extends Exception {

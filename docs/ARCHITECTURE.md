@@ -87,7 +87,7 @@ Atomic PostgreSQL buckets enforce UTC fixed-minute limits: login 20 per actual p
 
 ## Verification and evidence boundary
 
-Domain tests explain state/policy decisions; they cannot prove SQL locking. PostgreSQL integration tests exercise constraints, transactions and expiry. The independent 100-attempt exercise uses two JVMs on the production booking path below HTTP rate admission. HTTP burst results are retained separately. Session tests use two app processes; browser tests cover member/admin/conflict/workspace/mobile journeys.
+Domain tests explain state/policy decisions; they cannot prove SQL locking. PostgreSQL integration tests exercise constraints, transactions and expiry. The independent 100-attempt exercise uses two JVMs on the production booking path below HTTP rate admission. Integration tasks always execute; database/process observations are not restored from a task cache. HTTP burst results are retained separately. A12 releases 100 HTTP attempts together; A11 exercises application rate policy with 130 requests and an explicit eight-operation in-flight budget so its transport demand stays bounded. Session tests use two app processes; browser tests cover member/admin/conflict/workspace/mobile journeys.
 
 The rehearsal inventories A01–A12, teaching positive control T01, shared-session check S01 and read-only database/privilege check S02. Reports retain `PASS`, `FAIL`, `ERROR` and `INCOMPLETE`, request/status/code observations and independent state assertions. Missing evidence cannot become success. The exporter writes sanitized JSON, Markdown, escaped standalone HTML and SHA-256 inventories into a fresh directory. The instance marker helps prevent accidental targeting; it is not authentication or a security attestation.
 

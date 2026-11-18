@@ -12,7 +12,7 @@ The deliverable is an English room-reservation product and an inspectable local 
 | Framework-free domain | 40 tests; line and branch coverage gates passed |
 | Application unit and architecture checks | 5 tests passed |
 | Actual PostgreSQL and HTTP integration | 36 tests passed, including eight durable-clock checks and repeated lock-wait expiry checks |
-| Rehearsal/exporter and teaching fixture | 34 tests passed |
+| Rehearsal/exporter and teaching fixture | 36 tests passed, including bounded HTTP work and failure accounting |
 | React behavior | 18 tests passed |
 | Actual packaged-app browser journeys | 8/8 passed: member, room admin, stale-slot conflict and per-workspace roles, each on desktop and mobile |
 | Mocked PowerShell launcher boundaries | 14/14 passed without real Docker commands |
@@ -29,6 +29,16 @@ The final release section will record the fresh locked command, exact source rev
 - Real browser runs exposed backward database wall-clock observations, including a transition observed 2.250273 seconds before its reservation creation. The exact host-clock cause was not established. A durable, nondecreasing booking timeline now preserves the domain guard without pretending that a regressed wall clock measures physical elapsed time. [ADR 0005](decisions/0005-durable-booking-time.md) explains the implementation and limits.
 - The initial internal-only Docker bridge did not forward the configured loopback ports on the observed Docker Desktop host. Owned containers/networks were recreated with separate ordinary bridges while retaining the database volume. The final design makes no outbound-network sandbox claim.
 - Launcher review found unlabeled exact-name resource collisions, incomplete startup cleanup and inherited Compose interpolation values. Ownership checks, cleanup scope and controlled child-process values now cover those cases; mocked regressions preserve the original failure when cleanup also fails.
+
+## First complete rehearsal attempt
+
+At source revision `b9ad653f9abcbcfafcdac1d68ac2168c4b69e6b3`, the clean locked build passed: 115 Java tests, 18 React tests, documentation, architecture, coverage and formatting checks. The actual 100-attempt database exercise recorded two distinct JVM process IDs, one created reservation, 99 slot conflicts and one active assignment in 4.693 seconds.
+
+The real HTTP rehearsal ran from `2026-11-18T13:12:16.946558900Z` to `2026-11-18T13:14:22.265114800Z`: **14 PASS, 0 FAIL, 0 INCOMPLETE, 1 ERROR**. A11 received 48 responses and 82 transport errors; it did not pass. All other cases, including real expiry, stale cancellation, teaching positive control, shared sessions and independent database invariants/permissions passed. The failed run is retained locally under `artifacts/rehearsal/20261118T131216758Z/`.
+
+A11 had released 130 HTTP operations together against a product configured for at most 100 connections, after the separate contention clients had already used keep-alive connections. The revised rate-policy exercise keeps all 130 attempts while bounding in-flight operations at eight. The explicit budget and all failed attempts remain visible in reports. A12 retains its separate 100-operation HTTP start barrier and independent two-JVM database proof. No server rate, connection or quota limit was raised to make the test pass.
+
+The new regression checks that a gated batch fills but never exceeds its eight-operation budget, submits all 130 indices exactly once and retains two injected failures. A separate configuration change makes PostgreSQL/process integration tests always execute rather than restoring observations from Gradle's task cache. The final release still requires a fresh, complete rehearsal and a clean-start environment.
 
 ## Environment and reproducibility
 
