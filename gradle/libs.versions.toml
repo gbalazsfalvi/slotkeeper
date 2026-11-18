@@ -1,0 +1,20 @@
+[versions]
+springBoot = "4.1.2"
+junit = "6.0.3"
+spotless = "8.1.0"
+googleJavaFormat = "1.32.0"
+jacoco = "0.8.14"
+archunit = "1.4.1"
+bouncycastle = "1.83"
+
+[libraries]
+spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+archunit = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
+bouncycastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

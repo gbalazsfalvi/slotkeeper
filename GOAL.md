@@ -1,7 +1,7 @@
 # Slotkeeper v1 — delivery goal
 
 **Target:** 18 November 2026, 23:59 Europe/Budapest (22:59 UTC).
-**Current state:** design and implementation planning; no implementation or test success is claimed by this document.
+**Current state:** implementation in progress; completion is not yet claimed.
 
 Deliver a complete local room-reservation product and an inspectable application-security reference today. The deadline is a planning target; completion requires the checks below, not merely the passage of time.
 

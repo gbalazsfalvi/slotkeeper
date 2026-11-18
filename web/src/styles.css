@@ -1,0 +1,4 @@
+@import '@fontsource-variable/public-sans';
+:root { font-family: 'Public Sans Variable', sans-serif; color: #17394b; background: #f5f7f8; font-synthesis: none; }
+body { margin: 0; }
+main { padding: 3rem; }
