@@ -75,7 +75,7 @@ For example, `pwsh -NoProfile -File ./slotkeeper.ps1 rehearse` runs the complete
 
 For separate browser verification after `up`, run `npx --no-install playwright install chromium` once in `web`, then `npx --no-install playwright test`. Browser journeys create real synthetic room/booking history and consume the documented allowances.
 
-## Observed results
+## Observed v0.1.0 results
 
 | Check | Result |
 | --- | --- |

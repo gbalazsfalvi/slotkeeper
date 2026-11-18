@@ -97,7 +97,24 @@ public final class ApiProblems {
       return ProblemCode.SERVICE_UNAVAILABLE;
     if (failure instanceof org.springframework.transaction.TransactionTimedOutException
         || failure instanceof TransientDataAccessException) return ProblemCode.RESOURCE_BUSY;
+    LOG.warn("Unclassified failure types: {}", safeFailureTypes(failure));
     return ProblemCode.INTERNAL_ERROR;
+  }
+
+  /**
+   * Reports bounded framework types and SQLState codes, excluding exception messages and traces.
+   */
+  private static List<String> safeFailureTypes(Throwable failure) {
+    List<String> types = new ArrayList<>();
+    for (int depth = 0; failure != null && depth < 8; depth++, failure = failure.getCause()) {
+      String type = failure.getClass().getName();
+      if (failure instanceof java.sql.SQLException sql) {
+        String state = sql.getSQLState();
+        if (state != null && state.matches("[0-9A-Z]{5}")) type += "[" + state + "]";
+      }
+      types.add(type);
+    }
+    return List.copyOf(types);
   }
 
   private static int status(ProblemCode code) {

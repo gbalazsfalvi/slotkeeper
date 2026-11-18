@@ -2,8 +2,12 @@ package io.github.gbalazsfalvi.slotkeeper.http;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import io.github.gbalazsfalvi.slotkeeper.SlotkeeperApplication;
 import io.github.gbalazsfalvi.slotkeeper.persistence.DemoSeed;
+import io.github.gbalazsfalvi.slotkeeper.security.ApiProblems;
 import java.net.*;
 import java.net.http.*;
 import java.nio.charset.StandardCharsets;
@@ -11,6 +15,7 @@ import java.time.*;
 import java.util.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -35,6 +40,7 @@ class HttpSecurityTest {
   private static JdbcTemplate sql;
   private static ConfigurableApplicationContext first, second;
   private static String origin, otherOrigin;
+  private static final ListAppender<ILoggingEvent> FAILURE_TYPES = new ListAppender<>();
   private static final UUID HARBOR = DemoSeed.id("harbor"),
       STUDIO = DemoSeed.id("studio"),
       OAK = DemoSeed.id("harbor-oak");
@@ -63,6 +69,10 @@ class HttpSecurityTest {
     origin = "http://127.0.0.1:" + ((WebServerApplicationContext) first).getWebServer().getPort();
     otherOrigin =
         "http://127.0.0.1:" + ((WebServerApplicationContext) second).getWebServer().getPort();
+    // The production logger admits only bounded types/codes, so a failed outage
+    // assertion can retain its cause classification without exposing SQL text.
+    FAILURE_TYPES.start();
+    ((Logger) LoggerFactory.getLogger(ApiProblems.class)).addAppender(FAILURE_TYPES);
   }
 
   private static ConfigurableApplicationContext context(String jdbc) {
@@ -78,6 +88,8 @@ class HttpSecurityTest {
 
   @AfterAll
   static void stop() {
+    ((Logger) LoggerFactory.getLogger(ApiProblems.class)).detachAppender(FAILURE_TYPES);
+    FAILURE_TYPES.stop();
     if (first != null) first.close();
     if (second != null) second.close();
     POSTGRES.stop();
@@ -364,9 +376,15 @@ class HttpSecurityTest {
   @Order(Integer.MAX_VALUE)
   void anUnavailableDatabaseProducesABounded503InsteadOfLeakingInternals() throws Exception {
     browser.login(origin, "alex");
+    FAILURE_TYPES.list.clear();
     POSTGRES.stop();
     var response = browser.get(origin, "/api/workspaces");
-    assertEquals(503, response.statusCode(), response.body());
+    String diagnostic =
+        FAILURE_TYPES.list.stream()
+            .limit(8)
+            .map(ILoggingEvent::getFormattedMessage)
+            .collect(java.util.stream.Collectors.joining("; "));
+    assertEquals(503, response.statusCode(), response.body() + "; safe diagnostics=" + diagnostic);
     assertFalse(response.body().contains("jdbc:"));
     assertFalse(response.body().contains("SELECT"));
     assertFalse(response.body().contains("password"));
