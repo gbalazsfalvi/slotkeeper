@@ -16,7 +16,13 @@ The portfolio deployment verified all 171 generated files against their complete
 
 Fresh hosted builds exposed missing dependency-resolution metadata that the original warm Windows cache had not requested. The [dependency verification record](DEPENDENCY_VERIFICATION.md) documents the exact corrections and primary artifact sources. Strict checksum enforcement, pinned dependency versions, application behavior, the public tag and the frozen release evidence are unchanged. Use current `main` for a cold build.
 
+The release also includes a separate `slotkeeper-v0.1.0-cold-build-metadata.patch` and companion checksum inventory for readers starting from the original tagged source. The patch applies to its exact metadata and adds only the 30 reviewed POM/module hashes. Its SHA-256 is `fcf93e2b28c918a3b27419bb27c40fd2308fa93a0eee3e9f2871f8cd6d150b55`. It leaves application source and the original release assets unchanged.
+
 The [GitHub Actions workflow](https://github.com/gbalazsfalvi/slotkeeper/actions/workflows/verify.yml) records its own hosted status for each revision. It checks the wrapper, locked Java/PostgreSQL/process/frontend verification, mocked launcher regressions and frontend formatting. Browser journeys, the complete launcher rehearsal and their original screenshots are separate local observations. A hosted check is not substituted for that local evidence, and a failed hosted attempt is not a passing observation.
+
+[Hosted run 44328251657](https://github.com/gbalazsfalvi/slotkeeper/actions/runs/44328251657), at `6b4a5248cf962d8b7bbd6a7dedd4f4cafaed990d`, completed successfully on Ubuntu 24.04 with Temurin 21.0.13 and Node 24.14. It exercised all workflow gates. A separate Windows verification refreshed all 36 real PostgreSQL/HTTP integration tests and 18 React behavior tests successfully; the other Java task results were cached or up to date and are not claimed as fresh executions.
+
+The preceding hosted run `44327148180` passed dependency resolution and 35 of 36 integration tests, but failed the database-outage HTTP-status assertion. The next run passed without a booking-code change. The earlier shortened log does not retain the actual response, so the cause remains unresolved. Test failures now print full exception details for diagnosis if it recurs. This observation is retained as a possible test or outage-handling instability, rather than claimed as a repaired behavior.
 
 ## PQC direction
 
