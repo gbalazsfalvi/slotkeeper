@@ -16,7 +16,7 @@ Cookie: SLOTKEEPER_SESSION; HttpOnly; SameSite=Lax; Path=/; idle timeout30minute
 
 GET /api/workspaces/{workspaceId}/rooms returns {"items":[{"id":"uuid","workspaceId":"uuid","name":"Oak","description":"A quiet room.","enabled":true}]} for an authorized member.
 
-Scoped admins can POST the collection with {"name":"Oak","description":"A quiet room."}, returning201. PATCH /rooms/{roomId} accepts only name, description and enabled; at least one must be supplied. Names are1–80 trimmed characters, descriptions0–500. User-supplied owner/workspace/role/ID fields are forbidden. Mutations return the room view.
+Scoped admins can POST the collection with {"name":"Oak","description":"A quiet room."}, returning201. PATCH /rooms/{roomId} accepts only name, description and enabled; at least one must be supplied. Names are1–80 trimmed characters, descriptions0–500. User-supplied owner/workspace/role/ID fields are forbidden. Mutations return the room view. At most20rooms exist per workspace, including disabled rooms; concurrent creations share a durable workspace guard.
 
 GET /api/workspaces/{workspaceId}/availability?roomId={uuid}&date=YYYY-MM-DD returns:
 
@@ -30,7 +30,7 @@ GET /api/workspaces/{workspaceId}/availability?roomId={uuid}&date=YYYY-MM-DD ret
 }
 ~~~
 
-Availability values: AVAILABLE, HELD, BOOKED, UNAVAILABLE. It exposes no other user's identity. Dates are today through today+6 in the workspace zone. Local schedule is09:00–17:00, daily, at30minute boundaries. Existing past slots remain unavailable. The database time is authoritative; the client countdown is advisory.
+Availability values: AVAILABLE, HELD, BOOKED, UNAVAILABLE. It exposes no other user's identity. Dates are today through today+6 in the workspace zone. Local schedule is09:00–17:00, daily, at30minute boundaries. Existing past slots remain unavailable. The durable database decision time is authoritative; the client countdown is advisory. `serverNow` is a nondecreasing booking timestamp, advanced from wall time through a persisted singleton fence. During a backward clock adjustment it may pause until wall time catches up;120timestamp seconds are not an unconditional physical-elapsed-time promise. See decisions/0005-durable-booking-time.md.
 
 ## Reservation views and mutations
 
@@ -77,9 +77,9 @@ Stable error shape:
 {"type":"urn:slotkeeper:problem:slot-unavailable","title":"Slot unavailable","status":409,"code":"SLOT_UNAVAILABLE","detail":"This slot is no longer available. Choose another time.","requestId":"uuid"}
 ~~~
 
-Codes: VALIDATION_ERROR400, AUTHENTICATION_REQUIRED401, INVALID_CREDENTIALS401, FORBIDDEN403, CSRF_INVALID403, NOT_FOUND404, SLOT_UNAVAILABLE409, QUOTA_EXCEEDED409, HOLD_EXPIRED409, INVALID_STATE409, IDEMPOTENCY_CONFLICT409, PAYLOAD_TOO_LARGE413, UNSUPPORTED_MEDIA_TYPE415, RATE_LIMITED429, RESOURCE_BUSY503, SERVICE_UNAVAILABLE503.
+Codes: VALIDATION_ERROR400, AUTHENTICATION_REQUIRED401, INVALID_CREDENTIALS401, FORBIDDEN403, CSRF_INVALID403, NOT_FOUND404, SLOT_UNAVAILABLE409, QUOTA_EXCEEDED409, HOLD_EXPIRED409, INVALID_STATE409, IDEMPOTENCY_CONFLICT409, PAYLOAD_TOO_LARGE413, UNSUPPORTED_MEDIA_TYPE415, RATE_LIMITED429, RESOURCE_BUSY503, SERVICE_UNAVAILABLE503, INTERNAL_ERROR500.
 
-JSON bodies max16KiB; URL-form login fields are bounded before hashing; pagination/date/text limits above apply. Password input max256characters and username max80. Reject malformed/duplicate/unknown fields without echoing the input. Login20attempts per actual peer per UTC fixed minute; authenticated mutations60per actor/workspace per UTC fixed minute. Rate decisions are atomic across app processes. 429 includes Retry-After to the next window, at least one second. A fixed-window boundary can permit a burst spanning two windows; this is documented behavior, not a rolling-window claim. Ignore client-supplied Forwarded/X-Forwarded-For when deriving the peer.
+JSON bodies max16KiB; URL-form login fields are bounded before hashing; pagination/date/text limits above apply. Password input max256characters and username max80. Reject malformed/duplicate/unknown fields without echoing the input. Login20attempts per actual peer per UTC fixed minute; authenticated mutations60per actor/workspace per UTC fixed minute. Rate decisions are atomic across app processes. A mutation scope is checked for current membership before a rate bucket is allocated; foreign workspace probes cannot create unbounded buckets. 429 includes Retry-After to the next window, at least one second. A fixed-window boundary can permit a burst spanning two windows; this is documented behavior, not a rolling-window claim. Ignore client-supplied Forwarded/X-Forwarded-For when deriving the peer.
 
 ## Local health/ownership marker
 

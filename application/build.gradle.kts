@@ -13,10 +13,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("com.zaxxer:HikariCP")
     implementation(libs.bouncycastle)
     runtimeOnly("org.postgresql:postgresql")
-    annotationProcessor(platform(libs.spring.boot.bom))
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.testcontainers:testcontainers-postgresql")
@@ -35,6 +34,7 @@ val integrationTest by tasks.registering(Test::class) {
     useJUnitPlatform { includeTags("docker") }
     shouldRunAfter(tasks.named("test"))
     maxHeapSize = "1024m"
+    systemProperty("slotkeeper.test.classpath", sourceSets.test.get().runtimeClasspath.asPath)
 }
 
 tasks.named<ProcessResources>("processResources") {

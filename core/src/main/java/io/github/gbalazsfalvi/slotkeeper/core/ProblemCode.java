@@ -33,5 +33,7 @@ public enum ProblemCode {
   /** A bounded contention wait could not complete. */
   RESOURCE_BUSY,
   /** A required service failed; protection does not fail open. */
-  SERVICE_UNAVAILABLE
+  SERVICE_UNAVAILABLE,
+  /** Unexpected internal failure; never expose implementation details. */
+  INTERNAL_ERROR
 }
