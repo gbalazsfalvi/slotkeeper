@@ -87,13 +87,13 @@ Freeze these core interfaces before adapters diverge; small refinements must upd
 
 **Consumes:** core transaction/query contracts. **Produces:** real durable reservation, idempotency and event behavior.
 
-- [ ] Write failing PostgreSQL Testcontainers tests for one winner, different-body idempotency conflict, harmless same-key retry, cross-workspace composite-FK rejection, actor quota, late confirmation and stale cancellation after reassignment.
-- [ ] Run the dedicated integration-test task and observe the missing adapter/migration behavior.
-- [ ] Implement additive schema, constraints, prepared SQL, actor/slot lock ordering and database clock reads after locks. Keep lock/statement timeouts bounded. Persist business effect, original identity, event and idempotency record in one transaction.
-- [ ] Implement effective expiry on reads and safe lazy/scheduled cleanup. A cleanup/cancel update can clear only its own matching slot assignment.
-- [ ] Add a barrier-controlled100attempt test from two independent Java worker processes against one real database. Workers use the same production reservation path and distinct test actors, bypass only the HTTP rate layer, record process identities/outcomes and assert exactly one active allocation. Use argument files/environment rather than long Windows command lines or credential arguments.
-- [ ] Test actual PostgreSQL lock waits crossing expiry, idempotency insert contention, rollback after injected failure and restarted reads. Preserve all outcomes including retryable errors.
-- [ ] Run integration checks and architecture/coverage checks; commit.
+- [x] Write failing PostgreSQL Testcontainers tests for one winner, different-body idempotency conflict, harmless same-key retry, cross-workspace composite-FK rejection, actor quota, late confirmation and stale cancellation after reassignment.
+- [x] Run the dedicated integration-test task and observe the missing adapter/migration behavior.
+- [x] Implement additive schema, constraints, prepared SQL, actor/slot lock ordering and database clock reads after locks. Keep lock/statement timeouts bounded. Persist business effect, original identity, event and idempotency record in one transaction.
+- [x] Implement effective expiry on reads and safe lazy/scheduled cleanup. A cleanup/cancel update can clear only its own matching slot assignment.
+- [x] Add a barrier-controlled100attempt test from two independent Java worker processes against one real database. Workers use the same production reservation path and distinct test actors, bypass only the HTTP rate layer, record process identities/outcomes and assert exactly one active allocation. Use argument files/environment rather than long Windows command lines or credential arguments.
+- [x] Test actual PostgreSQL lock waits crossing expiry, idempotency insert contention, rollback after injected failure and restarted reads. Preserve all outcomes including retryable errors.
+- [x] Run integration checks and architecture/coverage checks; commit.
 
 ## Task3: authentication, scoped HTTP and sessions
 
@@ -101,12 +101,12 @@ Freeze these core interfaces before adapters diverge; small refinements must upd
 
 **Consumes:** core actor/use cases and JDBC adapters. **Produces:** real authenticated API and shared JDBC sessions.
 
-- [ ] Write failing real-HTTP tests for anonymous401, login session rotation, missing/invalid CSRF403, scoped foreign404, member/admin403, forbidden-field400 and logout invalidation.
-- [ ] Implement Spring form-login JSON success/failure handlers, Argon2id at the specified settings, bounded hash concurrency, HttpOnly/SameSite local cookies and JDBC sessions. No custom bearer-token protocol or client-owned tenant authority.
-- [ ] Resolve a fresh membership for scoped operations. Keep core authorization effective when use cases are invoked without a controller. Reject duplicate/unknown JSON fields and expose only typed DTOs.
-- [ ] Implement actual login/CSRF refresh/logout, bounded REST errors and security headers. Default API errors never redirect silently to HTML.
-- [ ] Start a second app process against the same test database; verify session use, current-authority checks and logout invalidation across both. Preserve separate evidence from pure domain tests.
-- [ ] Run real-HTTP and integration checks; commit.
+- [x] Write failing real-HTTP tests for anonymous401, login session rotation, missing/invalid CSRF403, scoped foreign404, member/admin403, forbidden-field400 and logout invalidation.
+- [x] Implement Spring form-login JSON success/failure handlers, Argon2id at the specified settings, bounded hash concurrency, HttpOnly/SameSite local cookies and JDBC sessions. No custom bearer-token protocol or client-owned tenant authority.
+- [x] Resolve a fresh membership for scoped operations. Keep core authorization effective when use cases are invoked without a controller. Reject duplicate/unknown JSON fields and expose only typed DTOs.
+- [x] Implement actual login/CSRF refresh/logout, bounded REST errors and security headers. Default API errors never redirect silently to HTML.
+- [x] Start a second app process against the same test database; verify session use, current-authority checks and logout invalidation across both. Preserve separate evidence from pure domain tests.
+- [x] Run real-HTTP and integration checks; commit.
 
 ## Task4: resource controls, admin and activity
 
@@ -114,11 +114,11 @@ Freeze these core interfaces before adapters diverge; small refinements must upd
 
 **Consumes:** authenticated actor/workspace scope. **Produces:** bounded mutation/login traffic and usable scoped admin functions.
 
-- [ ] Write failing tests for atomic60/minute actor/workspace decisions across processes,20/minute actual-peer login decisions, spoofed-forwarded-address non-bypass,16KiB rejection, bounded pagination/date ranges and dependency failure.
-- [ ] Implement short transactional rate windows with retention/cleanup; finish the rate transaction before booking locks. Return429 with Retry-After; dependency failure cannot turn protection off.
-- [ ] Add prepared/scoped room create/update/list and append-only successful booking activity. Never grant a member admin authority through submitted fields. Disabling a room does not cancel existing reservations.
-- [ ] Pin tests for daily allowance after cancellation, literal hostile-looking input, safe errors/logs and runtime-event privileges. Failed foreign access cannot leak target content through an error or audit response.
-- [ ] Run required checks; commit.
+- [x] Write failing tests for atomic60/minute actor/workspace decisions across processes,20/minute actual-peer login decisions, spoofed-forwarded-address non-bypass,16KiB rejection, bounded pagination/date ranges and dependency failure.
+- [x] Implement short transactional rate windows with retention/cleanup; finish the rate transaction before booking locks. Return429 with Retry-After; dependency failure cannot turn protection off.
+- [x] Add prepared/scoped room create/update/list and append-only successful booking activity. Never grant a member admin authority through submitted fields. Disabling a room does not cancel existing reservations.
+- [x] Pin tests for daily allowance after cancellation, literal hostile-looking input, safe errors/logs and runtime-event privileges. Failed foreign access cannot leak target content through an error or audit response.
+- [x] Run required checks; commit.
 
 ## Task5: complete product interface
 
@@ -126,12 +126,12 @@ Freeze these core interfaces before adapters diverge; small refinements must upd
 
 **Consumes:** API.md exact fields and statuses. **Produces:** the normal member/admin experience, independent of rehearsal internals.
 
-- [ ] Write failing behavior tests for login/CSRF refresh, workspace-change state clearing, slot conflict refresh, hold expiration and member/admin navigation.
-- [ ] Implement the approved calm operations layout, accessible controls and mobile order. Do not add cyber/neon decoration or expose implementation internals in booking copy.
-- [ ] Keep auth/session state server-owned. Handle errors by machine code; hold countdown uses serverNow/expiresAt with a monotonic client offset and never replaces server validation. Render user input as text.
-- [ ] Run type/unit checks against the exact API and packaged app. Playwright must complete member booking/cancel and admin room/activity journeys, tenant separation, conflict and mobile flows.
-- [ ] Capture one bounded desktop/mobile QA round, fix observed issues in one batch, confirm only if necessary. Screenshots must come from the actual running final app.
-- [ ] Commit the working interface.
+- [x] Write failing behavior tests for login/CSRF refresh, workspace-change state clearing, slot conflict refresh, hold expiration and member/admin navigation.
+- [x] Implement the approved calm operations layout, accessible controls and mobile order. Do not add cyber/neon decoration or expose implementation internals in booking copy.
+- [x] Keep auth/session state server-owned. Handle errors by machine code; hold countdown uses serverNow/expiresAt with a monotonic client offset and never replaces server validation. Render user input as text.
+- [x] Run type/unit checks against the exact API and packaged app. Playwright must complete member booking/cancel and admin room/activity journeys, tenant separation, conflict and mobile flows.
+- [x] Capture one bounded desktop/mobile QA round, fix observed issues in one batch, confirm only if necessary. Screenshots must come from the actual running final app.
+- [x] Commit the working interface.
 
 ## Task6: independent rehearsal and vulnerable positive control
 
@@ -139,12 +139,12 @@ Freeze these core interfaces before adapters diverge; small refinements must upd
 
 **Consumes:** frozen HTTP/API contract and the design's A01–A12 table. **Produces:** observed evidence, not a scanner or production security certification.
 
-- [ ] Write failing exporter/admission tests: foreign target marker refused, credentials/redacted fields refused, missing dependency becomes INCOMPLETE, unexpected response becomes FAIL/ERROR, no partial run is labeled complete, HTML text is escaped.
-- [ ] Implement owned-target checks and real authenticated HTTP sessions with cookies/CSRF kept in memory. Only local script-owned target URIs/instance markers are accepted.
-- [ ] Implement A01–A12 with independently specified response and final-state assertions. Reuse expiry setup for stale-action checks; preserve configured TTL and separate rate-blocked requests from DB-admitted contention.
-- [ ] Implement the isolated synthetic missing-scope fixture and demonstrate the A02 leak. Keep its reduced identity model explicit. Ensure it cannot load product sessions/database and is absent from the app artifact/default Compose runtime.
-- [ ] Generate JSON, Markdown, escaped standalone HTML and SHA256SUMS. Include exact revision/configuration, scenario IDs, request IDs, statuses, state assertions, timestamps and outcome counts; exclude all credentials/raw session material.
-- [ ] Run a complete fresh local rehearsal. Keep failed histories; dependent cases do not pass by omission. Commit runner and fixture source after checks.
+- [x] Write failing exporter/admission tests: foreign target marker refused, credentials/redacted fields refused, missing dependency becomes INCOMPLETE, unexpected response becomes FAIL/ERROR, no partial run is labeled complete, HTML text is escaped.
+- [x] Implement owned-target checks and real authenticated HTTP sessions with cookies/CSRF kept in memory. Only local script-owned target URIs/instance markers are accepted.
+- [x] Implement A01–A12 with independently specified response and final-state assertions. Reuse expiry setup for stale-action checks; preserve configured TTL and separate rate-blocked requests from DB-admitted contention.
+- [x] Implement the isolated synthetic missing-scope fixture and demonstrate the A02 leak. Keep its reduced identity model explicit. Ensure it cannot load product sessions/database and is absent from the app artifact/default Compose runtime.
+- [x] Generate JSON, Markdown, escaped standalone HTML and SHA256SUMS. Include exact revision/configuration, scenario IDs, request IDs, statuses, state assertions, timestamps and outcome counts; exclude all credentials/raw session material.
+- [x] Run a complete fresh local rehearsal. Keep failed histories; dependent cases do not pass by omission. Commit runner and fixture source after checks.
 
 ## Task7: one-command delivery, review and local reference release
 
@@ -152,14 +152,14 @@ Freeze these core interfaces before adapters diverge; small refinements must upd
 
 **Consumes:** the complete working product and observed evidence. **Produces:** the local GitHub-ready reference release.
 
-- [ ] Package app+frontend as one non-root application image, use an isolated owned PostgreSQL volume and separate migration/runtime roles; resolve and record image digests.
-- [ ] Implement up/verify/rehearse/down in PowerShell and Bash with local Docker-context/ownership checks. Do not issue prune, global stop or unscoped destructive cleanup.
-- [ ] Prepare pinned check-only CI matching local commands. Explicitly distinguish prepared CI from a remotely observed run. Exclude private runtime paths, credentials, build caches and bulk Docker data from source/evidence.
-- [ ] Run the complete clean locked verification and fresh Compose rehearsal, including two-process/session and100attempt evidence. Re-run checks only for fixes/new concerns after that.
-- [ ] Obtain a focused code review of authorization, transactions/expiry, resource controls and evidence admission; fix material findings with regression checks.
-- [ ] Finish English documentation with actual commands, actual screenshots, actual results and honest limits. Record exact versions, source revision and commands in DELIVERY.md. Include a5minute reviewer walkthrough.
-- [ ] Inspect/stage only intended public source, make authentic local commits and a local v0.1.0 tag after verification. Check clean status and fresh-start reproducibility. Do not claim public GitHub/live deployment in this local scope.
-- [ ] Mark GOAL.md complete only when every acceptance check actually passed; report remaining scope honestly if the deadline arrives first.
+- [x] Package app+frontend as one non-root application image, use an isolated owned PostgreSQL volume and separate migration/runtime roles; resolve and record image digests.
+- [x] Implement up/verify/rehearse/down in PowerShell and Bash with local Docker-context/ownership checks. Do not issue prune, global stop or unscoped destructive cleanup.
+- [x] Prepare pinned check-only CI matching local commands. Explicitly distinguish prepared CI from a remotely observed run. Exclude private runtime paths, credentials, build caches and bulk Docker data from source/evidence.
+- [x] Run the complete clean locked verification and fresh Compose rehearsal, including two-process/session and100attempt evidence. Re-run checks only for fixes/new concerns after that.
+- [x] Obtain a focused code review of authorization, transactions/expiry, resource controls and evidence admission; fix material findings with regression checks.
+- [x] Finish English documentation with actual commands, actual screenshots, actual results and honest limits. Record exact versions, source revision and commands in DELIVERY.md. Include a5minute reviewer walkthrough.
+- [x] Inspect/stage only intended public source, make authentic local commits and a local v0.1.0 tag after verification. Check clean status and fresh-start reproducibility. Do not claim public GitHub/live deployment in this local scope.
+- [x] Mark GOAL.md complete only when every acceptance check actually passed; report remaining scope honestly if the deadline arrives first.
 
 ## Self-review and execution note
 
@@ -171,3 +171,5 @@ The design received a bounded read-only builder check on18November2026: no impor
 Execution ruling: after the shared API contract and locked foundation were established, the independent web implementation is delegated as one bounded parallel domain under dispatching-parallel-agents. The parent continues native execution for backend, persistence, runner and integration. This is not a fresh implementer/reviewer per task. File ownership and the persistent ledger govern the handoff.
 
 Execution amendment: actual browser diagnostics measured a fresh database time2.250273seconds earlier than a committed reservation creation. Task2 therefore includes additiveV002, a durable nondecreasing decision clock with independent bounded connections, historical bootstrap and clock-fault regression tests. Core expiry/ownership guards and declared120second timestamp TTL remain unchanged. Cleanup now obtains room before slot/reservation to match business/FK lock order; a busy-room regression was observedRED before that fix. ADR0005 documents logical-clock scope and physical-time limits.
+
+Completion: the local v0.1.0 gate passed on 18 November 2026. See [the delivery record](../../DELIVERY.md) and [original evidence](../../evidence/v0.1.0/README.md) for the tested code revision, clean-start result, observed checks and limits. Publication remains a separate follow-up.

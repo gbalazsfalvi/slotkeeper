@@ -2,7 +2,7 @@
 
 Slotkeeper is a local, synthetic room-reservation reference built as a modular monolith. PostgreSQL owns shared state and concurrency. The browser displays decisions; the application authenticates and authorizes them. The independent verification runner records observations rather than supplying product authority.
 
-**Verification status:** pending final integrated verification. This document describes the code and frozen v1 contract; [DELIVERY.md](DELIVERY.md) records which checks actually ran.
+**Verification status:** the local v0.1.0 gate passed. [DELIVERY.md](DELIVERY.md) and the [original evidence](evidence/v0.1.0/README.md) record the exact tested revision and observations.
 
 ## Components and dependencies
 
@@ -32,7 +32,7 @@ The selected stack is Java 21, Gradle 9.2.0, Spring Boot 4.1.2, PostgreSQL 18.7,
 
 Normal operation uses the packaged app on `127.0.0.1:4190` and the owned database on `127.0.0.1:55419`. Explicit rehearsal adds an independent app on `4192` sharing the same product database, and the teaching fixture on `4193`. The optional Vite server uses `4195` during frontend development.
 
-The teaching process has no product session store or database access. It is not a vulnerable mode of the application. The scripts must enforce owned local Docker resources and explicit rehearsal activation; final Compose/script verification remains part of the release gate.
+The teaching process has no product session store or database access. It is not a vulnerable mode of the application. The scripts enforce owned local Docker resources and explicit rehearsal activation. The observed Windows clean-start and complete rehearsal are recorded in the delivery report; native Linux execution remains unobserved.
 
 Migration and runtime credentials are separate. The normal runtime has Flyway disabled and receives the `slotkeeper_app` role. A one-shot migration process owns schema changes and synthetic seed initialization. The runtime may select/insert booking events, but cannot update or delete them. This privilege boundary does not protect against a database or host administrator.
 
@@ -93,4 +93,4 @@ The rehearsal inventories A01–A12, teaching positive control T01, shared-sessi
 
 See [THREAT_MODEL.md](THREAT_MODEL.md) for trust assumptions and [decision notes](decisions/README.md) for the tradeoffs behind this structure.
 
-The product and teaching fixture use separate owned Docker bridge networks. Host publications are explicitly IPv4 loopback. These bridges are not an outbound-traffic sandbox; no egress-isolation claim is made. Docker Desktop29 did not forward published ports on an internal-only bridge in the observed first run, so the final local setup uses ordinary separate bridges. The teaching image receives no product network membership, database credentials or shared volume.
+The product and teaching fixture use separate owned Docker bridge networks. Host publications are explicitly IPv4 loopback. These bridges are not an outbound-traffic sandbox; no egress-isolation claim is made. The observed Docker Desktop host (Engine 29.8.1) did not forward published ports on an internal-only bridge in the first run, so the final local setup uses ordinary separate bridges. The teaching image receives no product network membership, database credentials or shared volume.

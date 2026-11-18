@@ -1,7 +1,7 @@
 # Slotkeeper v1 — delivery goal
 
 **Target:** 18 November 2026, 23:59 Europe/Budapest (22:59 UTC).
-**Current state:** implementation in progress; completion is not yet claimed.
+**Current state:** local v0.1.0 complete on 18 November 2026, before the target deadline. See [observed delivery](docs/DELIVERY.md) and [original evidence](docs/evidence/v0.1.0/README.md).
 
 Deliver a complete local room-reservation product and an inspectable application-security reference today. The deadline is a planning target; completion requires the checks below, not merely the passage of time.
 
@@ -19,15 +19,15 @@ A one-command local rehearsal runs twelve named abuse scenarios against owned sy
 
 ## Definition of done
 
-- [ ] One-command local Compose launch and documented shutdown preserve unrelated resources.
-- [ ] A member can log in, select a workspace/room/time, hold, confirm, inspect and cancel a booking; an admin can manage rooms and view scoped activity.
-- [ ] Core unit tests, PostgreSQL integration/concurrency tests, HTTP security tests and browser journeys pass.
-- [ ] The twelve rehearsal cases have complete observed assertions; no expected negative result is confused with a harness failure.
-- [ ] An isolated vulnerable fixture demonstrates at least one real missing-authorization control; it is absent from the normal app artifact/runtime.
-- [ ] Another application process can share sessions and stored reservations without weakening object scope, quotas or capacity.
-- [ ] Clean locked builds, formatting, Java documentation, architecture and coverage checks pass.
-- [ ] README, architecture, threat model, API contract, decision notes, screenshots, actual reports, limitations, licence/notices and a prepared CI workflow are ready for GitHub.
-- [ ] A final local rehearsal from a fresh Slotkeeper-owned run directory succeeds, and the working tree/commits match the delivered release.
+- [x] One-command local Compose launch and documented shutdown preserve unrelated resources.
+- [x] A member can log in, select a workspace/room/time, hold, confirm, inspect and cancel a booking; an admin can manage rooms and view scoped activity.
+- [x] Core unit tests, PostgreSQL integration/concurrency tests, HTTP security tests and browser journeys pass.
+- [x] The twelve rehearsal cases have complete observed assertions; no expected negative result is confused with a harness failure.
+- [x] An isolated vulnerable fixture demonstrates at least one real missing-authorization control; it is absent from the normal app artifact/runtime.
+- [x] Another application process can share sessions and stored reservations without weakening object scope, quotas or capacity.
+- [x] Clean locked builds, formatting, Java documentation, architecture and coverage checks pass.
+- [x] README, architecture, threat model, API contract, decision notes, screenshots, actual reports, limitations, licence/notices and a prepared CI workflow are ready for GitHub.
+- [x] A final local rehearsal from a fresh Slotkeeper-owned run directory succeeds, and the working tree/commits match the delivered release.
 
 The local reference is the deliverable. Production deployment, full identity-provider integration, real payments, external email/SMS, broad internet bot detection and a PQC integration are follow-up scopes. The report makes no security-certification, universal attack-coverage or production-scale performance claim.
 

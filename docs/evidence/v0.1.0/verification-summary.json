@@ -1,0 +1,81 @@
+{
+  "revision": "44a4caff44eb14424957ce51ae21bbc153fcf25f",
+  "recordedAtUTC": "2026-11-18T13:35:24.381762+00:00",
+  "javaSuites": {
+    "core:test": {
+      "tests": 40,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "application:integrationTest": {
+      "tests": 36,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "application:test": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "verification:test": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "training-target:test": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "coreCoverage": {
+    "BRANCH": {
+      "covered": 131,
+      "missed": 9
+    },
+    "LINE": {
+      "covered": 302,
+      "missed": 17
+    }
+  },
+  "reactBehaviorTests": {
+    "passed": 18,
+    "failed": 0
+  },
+  "packagedBrowserJourneys": {
+    "passed": 8,
+    "failed": 0,
+    "projects": [
+      "desktop",
+      "mobile"
+    ],
+    "retries": 0
+  },
+  "mockedLauncherCases": {
+    "passed": 14,
+    "failed": 0,
+    "realDockerInvoked": false
+  },
+  "rehearsal": {
+    "complete": true,
+    "counts": {
+      "INCOMPLETE": 0,
+      "FAIL": 0,
+      "ERROR": 0,
+      "PASS": 15
+    },
+    "startedAt": "2026-11-18T13:25:45.965690Z",
+    "finishedAt": "2026-11-18T13:27:49.582507600Z"
+  },
+  "cacheScope": {
+    "unchangedUnitResultsMayUseGradleCache": true,
+    "postgreSqlAndProcessChecksAlwaysExecute": true
+  },
+  "observedPlatform": "Windows / PowerShell 7 / local Docker Desktop Linux engine",
+  "remoteCiWasExecuted": false
+}

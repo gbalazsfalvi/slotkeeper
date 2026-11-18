@@ -11,3 +11,5 @@
 *.jar binary
 *.png binary
 *.jpg binary
+# Preserve exporter bytes, platform line endings and Markdown hard breaks with their hashes.
+docs/evidence/** -text whitespace=-blank-at-eol,cr-at-eol

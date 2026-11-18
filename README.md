@@ -1,98 +1,110 @@
 # Slotkeeper
 
-A local room-reservation application and an inspectable application-security reference. Book a room, hold a time, confirm it, and manage your bookings. Then inspect a separate rehearsal that exercises workspace isolation, ownership, retries, expiry, quotas and competing requests against synthetic data.
+A room-reservation product built to make ownership, retries and competing requests inspectable. Java owns the booking rules; PostgreSQL coordinates durable state across processes; React provides the normal member and administrator experience.
 
-**Release status:** pending final integrated verification. Development checks are recorded in [DELIVERY.md](docs/DELIVERY.md); the complete local release, final rehearsal and screenshots are not yet claimed.
+**Local reference release: v0.1.0.** Tested code: `44a4caf`. See the [observed delivery record](docs/DELIVERY.md) and [complete evidence snapshot](docs/evidence/v0.1.0/README.md).
 
-## Try it locally
+![Actual Slotkeeper desktop booking screen](docs/images/slotkeeper-desktop.png)
 
-Prerequisites: Git, a Java 21 JDK, Node.js 24.14 or later in the 24.x line, and a local Docker daemon with Docker Compose. Windows uses PowerShell 7.4 or newer; native Linux uses Bash, Python 3 and `flock`. Select Java 21 in the invoking shell. Dependencies are pinned in the Gradle catalogs, lockfiles, verification metadata and npm lockfile.
+## What it demonstrates
 
-Run commands from the repository root. The release rehearsal requires committed source changes so its evidence identifies the tested revision.
+| Area | Implementation and evidence |
+| --- | --- |
+| Booking product | Two workspaces, room availability, temporary holds, confirmation, cancellation, personal bookings and scoped room/activity administration |
+| Authority | Server-side sessions, current database membership, per-workspace roles, object ownership, CSRF and strict typed request fields |
+| Durable correctness | Atomic slot assignment, actor allowances, scoped idempotency receipts, successful booking events and expected-ID release |
+| Abuse controls | Bounded bodies/password work, database-backed admission, quotas and explicit safe failures |
+| Inspectable results | Twelve named abuse cases, an isolated vulnerable positive control, shared-session verification and independent database invariants/permissions |
 
-PowerShell:
+Holds last at most 120 seconds on the server booking timeline, capped at slot start. Capacity is one; slots are 30 minutes; seven workspace-local dates are available. Each actor/workspace has at most two live holds and four successful confirmations per slot-local date. Cancellation retains history and does not refund the confirmation allowance. A workspace has at most 20 rooms, including disabled rooms.
+
+The booking timeline cannot move backward. It can pause while a regressed wall clock catches up; [ADR 0005](docs/decisions/0005-durable-booking-time.md) explains that deliberate tradeoff and its physical-time limits.
+
+## Run locally
+
+Prerequisites: Git, a Java 21 JDK, Node.js 24.14 or later in the 24.x line, and a local Docker daemon with Docker Compose. Windows uses PowerShell 7.4 or newer; native Linux uses Bash, Python 3 and `flock`. Select Java 21 in the invoking shell. Dependencies, wrapper bytes and container images are pinned.
+
+From the repository root, use PowerShell:
 
 ```powershell
-.\slotkeeper.ps1 up
-.\slotkeeper.ps1 status
+pwsh -NoProfile -File ./slotkeeper.ps1 up
 ```
 
-Bash:
+Or Bash:
 
 ```bash
 ./slotkeeper.sh up
-./slotkeeper.sh status
 ```
 
-Open [Slotkeeper on loopback](http://127.0.0.1:4190). The normal application serves both the interface and its API. The optional Vite development server is separate from this packaged experience.
+Open [Slotkeeper](http://127.0.0.1:4190). The packaged application serves both the UI and API. Follow the [five-minute reviewer walkthrough](docs/WALKTHROUGH.md).
 
-| Account | Workspace access |
+| Synthetic account | Workspace access |
 | --- | --- |
 | `alex` | Member, Harbor Works |
 | `morgan` | Admin, Harbor Works |
 | `riley` | Member, Studio North |
 | `jordan` | Admin, Studio North; member, Harbor Works |
 
-All four synthetic accounts use the public fixture password **`Slotkeeper-Local-Only!`**. Selecting an account on the sign-in screen fills these local credentials. No real tenants or external accounts belong in this demo.
+All four use the public fixture password **`Slotkeeper-Local-Only!`**. The sign-in screen can fill an account. These are local synthetic identities.
 
-Follow the [five-minute walkthrough](docs/WALKTHROUGH.md) for member booking, room administration and evidence review.
-
-## What to inspect
-
-- **Product behavior:** seven days of availability, fixed 30-minute room slots, temporary holds, confirmation, cancellation, personal bookings and scoped room/activity administration.
-- **Server decisions:** current database membership, object ownership and typed request fields determine authority. Browser navigation and submitted role/owner fields cannot grant access.
-- **Durable correctness:** PostgreSQL transactions coordinate slot assignment, actor allowances, retry receipts and successful booking events across application processes.
-- **Separate evidence:** twelve named abuse cases, an isolated vulnerable teaching fixture and a shared-session check have explicit observed outcomes. Missing prerequisites remain visible.
-
-Holds last at most 120 seconds on the server booking timeline and never extend beyond the slot start. The timeline cannot move backward; it can pause during a wall-clock regression, as documented in [ADR 0005](docs/decisions/0005-durable-booking-time.md). Each actor/workspace may have two unexpired holds and four successful confirmations per slot-local date; cancellation does not refund the confirmation allowance. A workspace has at most 20 rooms, including disabled rooms. Workspace times are explicit; the server validates expiry and state.
-
-## Commands and local ports
-
-Use the same verb with either entry point:
+Use the same verb with either launcher:
 
 | Verb | Purpose |
 | --- | --- |
-| `up` | Build/start the owned local product and database |
-| `status` | Inspect the owned local environment |
-| `verify` | Run locked project verification checks |
-| `rehearse` | Obtain fresh verification evidence, explicitly start extra rehearsal targets and export observed evidence |
-| `down` | Stop the owned environment while retaining its persistent data |
+| `up` | Build and start the owned product and database |
+| `status` | Inspect this local environment |
+| `verify` | Run locked Java/PostgreSQL/frontend and launcher checks |
+| `rehearse` | Obtain fresh verification evidence, start extra targets, export observed reports, then stop the extra targets |
+| `down` | Stop the owned environment while retaining its database volume |
 
-For example, run `.\slotkeeper.ps1 verify` and `.\slotkeeper.ps1 rehearse` in PowerShell, or `./slotkeeper.sh verify` and `./slotkeeper.sh rehearse` in Bash. Finish with the corresponding `down` command. The scripts are scoped to Slotkeeper resources; they do not publish a site or repository.
+For example, `pwsh -NoProfile -File ./slotkeeper.ps1 rehearse` runs the complete local rehearsal. It requires a committed, clean source tree so the report identifies the tested revision. Runtime credentials and fresh reports stay in ignored local directories. Keep the private runtime configuration with the retained database between runs.
 
 | Loopback port | Role |
 | --- | --- |
 | `4190` | Normal product UI/API |
-| `4192` | Second product process, explicit rehearsal only |
-| `4193` | Isolated teaching target, explicit rehearsal only |
-| `55419` | Owned PostgreSQL instance |
+| `4192` | Independent second app, explicit rehearsal only |
+| `4193` | Isolated teaching fixture, explicit rehearsal only |
+| `55419` | Owned PostgreSQL |
 | `4195` | Optional Vite development server |
 
-## Evidence and screenshots
+For separate browser verification after `up`, run `npx --no-install playwright install chromium` once in `web`, then `npx --no-install playwright test`. Browser journeys create real synthetic room/booking history and consume the documented allowances.
 
-The rehearsal exports `report.json`, `report.md`, standalone `report.html` and `SHA256SUMS` into `artifacts/rehearsal/<timestamp>/`. Separate `database-contention.json` evidence records the two-JVM database exercise. The final command output and [delivery record](docs/DELIVERY.md) identify the actual run directory and source revision. A report is complete only when every required check is observed and passes; `FAIL`, `ERROR` and `INCOMPLETE` are preserved.
+## Observed results
 
-Actual desktop and mobile captures of the packaged local product:
+| Check | Result |
+| --- | --- |
+| Java domain, application, PostgreSQL, verifier and fixture tests | 117 passed; zero failures/errors/skips |
+| React behavior tests | 18 passed |
+| Packaged browser journeys | 8 passed across desktop and mobile; zero retries |
+| Mocked launcher safety cases | 14 passed; no real Docker commands in these cases |
+| Actual security rehearsal | 15 PASS; zero FAIL, ERROR or INCOMPLETE |
+| Two independent JVMs, 100 database attempts | 1 created reservation, 99 slot conflicts, 1 active assignment |
+| Core coverage | 302/319 lines and 131/140 branches |
 
-![Slotkeeper desktop booking: room, time grid and temporary hold](docs/images/slotkeeper-desktop.png)
+The [portable report](docs/evidence/v0.1.0/report.md), [JSON observations](docs/evidence/v0.1.0/report.json), [standalone HTML](docs/evidence/v0.1.0/report.html) and [independent contention artifact](docs/evidence/v0.1.0/database-contention.json) are actual exported evidence. Fresh rehearsal writes the same formats and `SHA256SUMS` under `artifacts/rehearsal/<timestamp>/`.
+
+A11 sends 130 requests with at most eight in flight; this run observed 73 rate rejections and no transport errors. A12 separately releases 100 HTTP attempts together. It records quota/rate rejections as guard decisions; they do not establish database-lock admission. The independent database exercise uses 100 distinct synthetic actors across two JVMs on the production booking path below HTTP admission. Request latencies and elapsed test time are observations, not a production capacity benchmark.
 
 <details>
-<summary>Mobile booking screen</summary>
+<summary>Actual mobile booking screen</summary>
 
-<img src="docs/images/slotkeeper-mobile.png" alt="Slotkeeper mobile booking flow" width="390" />
+<img src="docs/images/slotkeeper-mobile.png" alt="Actual mobile room selection, time grid and hold confirmation" width="390" />
 
 </details>
 
-The final revision-matched report and its screenshot are pending the complete rehearsal.
+<details>
+<summary>Actual complete rehearsal report</summary>
 
-HTTP rate rejections and database lock admissions answer different questions. The 100-attempt database exercise must retain its independent two-process evidence; a set of HTTP `429` responses cannot establish last-slot transaction correctness. SHA-256 inventories detect changed report bytes; they do not certify their origin or prove security.
+![All fifteen observed rehearsal checks passed](docs/images/slotkeeper-report.png)
+
+</details>
 
 ## Technical map and limits
 
-Java 21, Gradle 9.2.0, Spring Boot 4.1.2, PostgreSQL 18.7 and React 19.3.1 form a modular monolith. The frontend is packaged into the application. The framework-free domain lives in `core`; HTTP/security/JDBC adapters live in `application`; `verification` and `training-target` are independent artifacts.
+Java 21, Gradle 9.2.0, Spring Boot 4.1.2, PostgreSQL 18.7 and React 19.3.1 form a modular monolith. The framework-free domain lives in `core`; HTTP/security/JDBC adapters and the packaged frontend live in `application`; `verification` and `training-target` are independent artifacts. The vulnerable fixture is absent from the normal product artifact and default runtime.
 
-Read the [architecture](docs/ARCHITECTURE.md), [HTTP contract](docs/API.md), [threat model](docs/THREAT_MODEL.md) and [decision notes](docs/decisions/README.md). [GOAL.md](GOAL.md) defines the acceptance gate.
+Read the [architecture](docs/ARCHITECTURE.md), [HTTP contract](docs/API.md), [threat model](docs/THREAT_MODEL.md), [decision notes](docs/decisions/README.md), [delivery goal](GOAL.md) and [implementation plan](docs/superpowers/plans/2026-11-18-slotkeeper-v1.md).
 
-This reference uses local HTTP, public synthetic credentials and owned loopback resources. It is not a production deployment or a penetration-test certification. External identity, internet-facing operation, payments, notifications and PQC integration are outside v1. A prepared CI workflow is not evidence of a remote CI run.
+This release uses local HTTP, public fixture credentials and trusted local administration. Real-user onboarding, TLS deployment, external identity, payments, notifications, HA and PQC integration are future scopes. Separate Docker bridges are not an outbound-traffic sandbox. Instance markers prevent targeting accidents; report hashes detect changed bytes. Neither is a security certification. Windows execution is observed. Native Linux launch and a remote run of the prepared GitHub Actions workflow remain unobserved.
 
-Licensed under [Apache-2.0](LICENSE); see [NOTICE](NOTICE).
+Licensed under [Apache-2.0](LICENSE); see [NOTICE](NOTICE) and the packaged [frontend notices](web/public/licenses/third-party.txt).

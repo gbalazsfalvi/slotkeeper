@@ -1,10 +1,10 @@
 # Five-minute reviewer walkthrough
 
-Use this sequence after the local environment is running. Building images and running the full rehearsal take additional time, including real hold expiry. **Final integrated verification, final report paths and screenshots are pending.** The steps below describe the review journey; they are not a record that the journey has passed.
+Use this sequence after the local environment is running. Building images and running the full rehearsal take additional time, including real hold expiry. The member/admin/browser journeys and complete local rehearsal passed at the code revision recorded in [DELIVERY.md](DELIVERY.md). The [included evidence snapshot](evidence/v0.1.0/README.md) can be inspected without starting the application.
 
 ## Before the timer
 
-From the repository root, run `.\slotkeeper.ps1 up` in PowerShell or `./slotkeeper.sh up` in Bash. Open [the local product](http://127.0.0.1:4190). The launcher interface is pending final integrated verification. Run `status` through the same entry point to inspect the owned environment.
+From the repository root, run `.\slotkeeper.ps1 up` in PowerShell or `./slotkeeper.sh up` in Bash. Open [the local product](http://127.0.0.1:4190). Run `status` through the same entry point to inspect the owned environment.
 
 All identities are synthetic and use the public fixture password `Slotkeeper-Local-Only!`. The sign-in page can fill each account. Use a future day if today's schedule has ended; rooms have 30-minute slots between 09:00 and 17:00 in the displayed workspace zone.
 
@@ -25,7 +25,7 @@ All identities are synthetic and use the public fixture password `Slotkeeper-Loc
 
 ## 2:30–4:00 · Read actual evidence
 
-Before a review session, run `.\slotkeeper.ps1 rehearse` or `./slotkeeper.sh rehearse`. This obtains fresh verification evidence and explicitly adds the second app process and isolated teaching target. Use the directory printed by that run under `artifacts/rehearsal/<timestamp>/`; the final integrated run is pending.
+Before a review session, run `.\slotkeeper.ps1 rehearse` or `./slotkeeper.sh rehearse`. This obtains fresh verification evidence and explicitly adds the second app process and isolated teaching target. Use the directory printed by that run under `artifacts/rehearsal/<timestamp>/`; the included v0.1.0 snapshot records the completed run `20261118T132545704Z`.
 
 Open the generated `report.html` and inspect:
 
@@ -38,12 +38,12 @@ Open the generated `report.html` and inspect:
 - **S01:** a session and logout are checked across independent app processes.
 - **S02:** a read-only consistent PostgreSQL snapshot checks slot assignments, allowances, receipts, events and restricted runtime permissions.
 
-Use `report.json` for exact sanitized observations and assertions, `report.md` for a portable summary, and `SHA256SUMS` to check file bytes. Inspect the separate `database-contention.json` when assessing A12's database claim. A `FAIL`, `ERROR` or `INCOMPLETE` result remains meaningful; missing evidence does not pass. No complete final rehearsal is claimed until its actual report and delivery entry exist.
+Use `report.json` for exact sanitized observations and assertions, `report.md` for a portable summary, and `SHA256SUMS` to check file bytes. Inspect the separate `database-contention.json` when assessing A12's database claim. A `FAIL`, `ERROR` or `INCOMPLETE` result remains meaningful; missing evidence does not pass. The included complete report and delivery entry identify the observed local run.
 
 ## 4:00–5:00 · Inspect the implementation and limits
 
 Read the transaction sequence in [ARCHITECTURE.md](ARCHITECTURE.md) alongside `ReservationService`, `JdbcBookingTransaction` and `V001__baseline.sql`. Look for the actor/slot lock order, fresh database time, scoped receipt uniqueness and expected-reservation-ID release.
 
-Read [THREAT_MODEL.md](THREAT_MODEL.md) for the local trust assumptions and [DELIVERY.md](DELIVERY.md) for observed checks and remaining gates. Desktop, mobile and report screenshots remain **pending final integrated verification**; planned paths are listed in the README without missing-image embeds.
+Read [THREAT_MODEL.md](THREAT_MODEL.md) for the local trust assumptions and [DELIVERY.md](DELIVERY.md) for observed checks and remaining gates. The README includes actual desktop/mobile captures and the complete report screenshot, with links to the original exports.
 
 When finished, run `.\slotkeeper.ps1 down` or `./slotkeeper.sh down`. Shutdown is scoped to Slotkeeper and retains its persistent data; the reviewer-created room/history may remain for the next local session.

@@ -1,6 +1,6 @@
 # Threat model
 
-Slotkeeper v1 demonstrates room-booking controls on an owned local environment with synthetic people and workspaces. This model identifies the boundaries those controls address and the evidence needed to assess them. **Final integrated verification is pending.** A design statement or passing unit test is not proof that an end-to-end control passed; consult [DELIVERY.md](DELIVERY.md) and the actual rehearsal report.
+Slotkeeper v1 demonstrates room-booking controls on an owned local environment with synthetic people and workspaces. This model identifies the boundaries those controls address and the evidence needed to assess them. **The local v0.1.0 gate passed at the revision recorded in [DELIVERY.md](DELIVERY.md).** A design statement or passing unit test is not proof that an end-to-end control passed; consult [DELIVERY.md](DELIVERY.md) and the actual rehearsal report.
 
 ## Assets, actors and assumptions
 

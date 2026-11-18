@@ -1,0 +1,1 @@
+{"kind":"DATABASE_CONTENTION","attempts":100,"workers":2,"processIds":[99848,99928],"outcomes":{"CREATED":1,"SLOT_UNAVAILABLE":99},"activeAssignments":1,"distinctReservations":1,"startedAt":"2026-11-18T13:24:45.785597600Z","finishedAt":"2026-11-18T13:24:51.146407700Z","revision":"44a4caff44eb14424957ce51ae21bbc153fcf25f","result":"PASS"}
