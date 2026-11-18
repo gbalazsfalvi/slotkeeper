@@ -20,7 +20,7 @@ subprojects {
     dependencyLocking { lockAllConfigurations() }
     tasks.withType<JavaCompile>().configureEach { options.encoding = "UTF-8"; options.release.set(21); options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror", "-parameters")) }
     tasks.withType<Javadoc>().configureEach { options.encoding = "UTF-8"; (options as StandardJavadocDocletOptions).addBooleanOption("Xdoclint:all", true); (options as StandardJavadocDocletOptions).addBooleanOption("Werror", true); isFailOnError = true }
-    tasks.withType<Test>().configureEach { useJUnitPlatform(); maxParallelForks = 1; maxHeapSize = "512m"; testLogging { events("failed", "skipped") } }
+    tasks.withType<Test>().configureEach { useJUnitPlatform(); maxParallelForks = 1; maxHeapSize = "512m"; testLogging { events("failed", "skipped"); exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL } }
     tasks.withType<JacocoReport>().configureEach { dependsOn(tasks.named("test")); reports { xml.required.set(true); html.required.set(true) } }
     tasks.named("check") { dependsOn("spotlessCheck", "javadoc", "jacocoTestReport") }
     tasks.register("resolveDependencies") { notCompatibleWithConfigurationCache("Explicit dependency inventory resolves configurations at execution."); doLast { configurations.filter { it.isCanBeResolved }.sortedBy { it.name }.forEach { it.resolve() } } }

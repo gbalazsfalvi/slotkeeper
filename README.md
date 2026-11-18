@@ -2,7 +2,11 @@
 
 A room-reservation product built to make ownership, retries and competing requests inspectable. Java owns the booking rules; PostgreSQL coordinates durable state across processes; React provides the normal member and administrator experience.
 
-**Local reference release: v0.1.0.** Tested code: `44a4caf`. See the [observed delivery record](docs/DELIVERY.md) and [complete evidence snapshot](docs/evidence/v0.1.0/README.md).
+**Published reference release: [v0.1.0](https://github.com/gbalazsfalvi/slotkeeper/releases/tag/v0.1.0).** Tested executable code: `44a4caf`. See the [observed delivery record](docs/DELIVERY.md), [complete evidence snapshot](docs/evidence/v0.1.0/README.md), and [publication record](docs/PUBLICATION.md).
+
+[![Verify Slotkeeper](https://github.com/gbalazsfalvi/slotkeeper/actions/workflows/verify.yml/badge.svg)](https://github.com/gbalazsfalvi/slotkeeper/actions/workflows/verify.yml)
+
+Read the case study in [English](https://balazsfalvi.hu/work/slotkeeper/) or [Hungarian](https://balazsfalvi.hu/hu/munkak/slotkeeper/). Both include actual screenshots and a downloadable evidence bundle.
 
 ![Actual Slotkeeper desktop booking screen](docs/images/slotkeeper-desktop.png)
 
@@ -23,6 +27,8 @@ The booking timeline cannot move backward. It can pause while a regressed wall c
 ## Run locally
 
 Prerequisites: Git, a Java 21 JDK, Node.js 24.14 or later in the 24.x line, and a local Docker daemon with Docker Compose. Windows uses PowerShell 7.4 or newer; native Linux uses Bash, Python 3 and `flock`. Select Java 21 in the invoking shell. Dependencies, wrapper bytes and container images are pinned.
+
+Use the current `main` checkout for a cold build. The immutable `v0.1.0` tag predates a [strict dependency-metadata correction](docs/DEPENDENCY_VERIFICATION.md); the released application behavior and original evidence are unchanged.
 
 From the repository root, use PowerShell:
 
@@ -105,6 +111,12 @@ Java 21, Gradle 9.2.0, Spring Boot 4.1.2, PostgreSQL 18.7 and React 19.3.1 form 
 
 Read the [architecture](docs/ARCHITECTURE.md), [HTTP contract](docs/API.md), [threat model](docs/THREAT_MODEL.md), [decision notes](docs/decisions/README.md), [delivery goal](GOAL.md) and [implementation plan](docs/superpowers/plans/2026-11-18-slotkeeper-v1.md).
 
-This release uses local HTTP, public fixture credentials and trusted local administration. Real-user onboarding, TLS deployment, external identity, payments, notifications, HA and PQC integration are future scopes. Separate Docker bridges are not an outbound-traffic sandbox. Instance markers prevent targeting accidents; report hashes detect changed bytes. Neither is a security certification. Windows execution is observed. Native Linux launch and a remote run of the prepared GitHub Actions workflow remain unobserved.
+This release uses local HTTP, public fixture credentials and trusted local administration. Real-user onboarding, TLS deployment, external identity, payments, notifications, HA and PQC integration are future scopes. Separate Docker bridges are not an outbound-traffic sandbox. Instance markers prevent targeting accidents; report hashes detect changed bytes. Neither is a security certification. Windows launch and rehearsal are observed. The linked Actions workflow reports hosted verification separately; it does not run the native Linux launcher or the complete browser/rehearsal flow.
+
+## Proposed next milestone
+
+The selected direction is [issuer-backed PQC-signed hold admission](docs/superpowers/specs/2026-11-18-slotkeeper-pqc-admission-design.md). A separate issuer would approve a scoped hold intent, and booking replicas would verify and atomically redeem it once. The proposal combines admission budgets, bounded signing/verification work, cross-workspace measurements, and a same-topology Ed25519/ML-DSA comparison.
+
+The [research note](docs/research/2026-11-18-pqc-admission-options.md) links the primary standards, alternatives, and an observed Java-provider smoke test. The detailed limits and contract await owner approval. V0.1.0 does not implement this extension, and PQC signing alone does not stop booking spam.
 
 Licensed under [Apache-2.0](LICENSE); see [NOTICE](NOTICE) and the packaged [frontend notices](web/public/licenses/third-party.txt).

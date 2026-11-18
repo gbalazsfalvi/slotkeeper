@@ -2,7 +2,7 @@
 
 Slotkeeper is an independent local reference project. All source, comments, UI, reports and documentation are English.
 
-- Work only in this project. Never import private employer source or alter sibling projects, live websites, existing Docker workloads or machine-wide configuration.
+- Keep application work in this project and never import private employer source. The owner explicitly authorized publication to `gbalazsfalvi/slotkeeper` and a separate bilingual case study on the existing personal portfolio. That authorization does not extend to unrelated projects, Docker workloads or machine-wide configuration.
 - Use Java 21, constructor injection, immutable domain values and explicit application boundaries. Core has no Spring, JDBC, HTTP or JSON dependency.
 - Use feature packages under io.github.gbalazsfalvi.slotkeeper. Keep classes focused. Public Java APIs have meaningful Javadoc; inline comments explain non-obvious decisions rather than repeat statements.
 - Start behavioral changes with meaningful failing tests. Use actual PostgreSQL for locking, transactions, constraints, sessions and contention tests; do not substitute H2 or a mocked repository for database evidence.
@@ -12,7 +12,7 @@ Slotkeeper is an independent local reference project. All source, comments, UI, 
 - Preserve exact observed results. FAIL, ERROR and INCOMPLETE are real outcomes; missing observations cannot become PASS. Concurrency, functional correctness and latency observations have different scopes.
 - Use local Docker Desktop only, project-scoped Compose resources and loopback host ports. No prune, unrelated stop/down, remote Docker context or volume-wide cleanup.
 - Keep Gradle/npm dependencies pinned and locked; keep strict Gradle verification. Do not relax a check to make a deadline.
-- Keep authentic local Git commits on main. Today's scope is a local, GitHub-ready reference release; remote publication is not part of the local launch scripts.
+- Keep authentic Git commits on main and preserve published release tags and frozen evidence. Remote publication is a separate authorized workflow; local launch scripts must never publish. The proposed PQC admission design remains unimplemented pending detailed approval.
 - NVM is available only from CMD/PowerShell; do not run NVM scripts.
 
 Read GOAL.md, the design and implementation plan before implementation. Record actual milestone checks in docs/DELIVERY.md as work progresses.
