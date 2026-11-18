@@ -9,8 +9,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "format": "prettier --write src *.ts *.json index.html",
-    "format:check": "prettier --check src *.ts *.json index.html"
+    "format": "prettier --write src e2e *.ts *.json index.html",
+    "format:check": "prettier --check src e2e *.ts *.json index.html"
   },
   "dependencies": {
     "react": "19.3.1",

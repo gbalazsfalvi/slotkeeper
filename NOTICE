@@ -2,3 +2,7 @@ Slotkeeper
 Copyright 2026 Gergő Balázsfalvi
 
 An independent room-reservation and application-security reference project.
+
+Spring Session JDBC PostgreSQL session-table definitions are adapted from Spring Session 4.1.1, Copyright the Spring authors, licensed under Apache-2.0.
+
+Bundled frontend component and font license texts are preserved in web/public/licenses/third-party.txt and in the packaged static licenses directory.
